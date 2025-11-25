@@ -6,7 +6,8 @@ import {
   signOut,
   onAuthStateChanged,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import {
   doc,
@@ -18,8 +19,7 @@ import {
   query,
   where,
   getDocs,
-  deleteDoc,
-  orderBy
+  deleteDoc
 } from 'firebase/firestore';
 import { Users, Calendar, User, Clock, AlertCircle } from 'lucide-react';
 
@@ -276,6 +276,31 @@ const IntegratedTimetableApp = () => {
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  };
+
+  const handlePasswordReset = async (email) => {
+    if (!email) {
+      alert('Please enter your email address first.');
+      return;
+    }
+    try {
+      setAuthLoading(true);
+      await sendPasswordResetEmail(auth, email);
+      alert('Password reset email sent! Check your inbox.');
+      return true;
+    } catch (error) {
+      console.error('Password reset error:', error);
+      let errorMessage = 'Failed to send reset email.';
+      if (error.code === 'auth/user-not-found') {
+        errorMessage = 'No user found with this email address.';
+      } else if (error.code === 'auth/invalid-email') {
+        errorMessage = 'Invalid email address.';
+      }
+      alert(errorMessage);
+      return false;
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -656,51 +681,54 @@ const IntegratedTimetableApp = () => {
         showPassword={showPassword}
         setShowPassword={setShowPassword}
         showSuccessAnimation={showSuccessAnimation}
+        handlePasswordReset={handlePasswordReset}
       />
     );
   }
 
   return (
-    <TimetableGenerator
-      currentStep={currentStep}
-      setCurrentStep={setCurrentStep}
-      timetableType={timetableType}
-      setTimetableType={setTimetableType}
-      showSuccessAnimation={showSuccessAnimation}
-      timetableData={timetableData}
-      setTimetableData={setTimetableData}
-      currentActivity={currentActivity}
-      setCurrentActivity={setCurrentActivity}
-      generatedTimetable={generatedTimetable}
-      conflicts={conflicts}
-      optimizationSettings={optimizationSettings}
-      setOptimizationSettings={setOptimizationSettings}
-      handleTypeSelection={handleTypeSelection}
-      addTimeSlot={addTimeSlot}
-      removeTimeSlot={removeTimeSlot}
-      addActivity={addActivity}
-      removeActivity={removeActivity}
-      togglePreference={togglePreference}
-      generateTimetable={generateTimetable}
-      regenerateTimetable={regenerateTimetable}
-      exportTimetable={exportTimetable}
-      saveTimetable={saveTimetable}
-      resetGenerator={resetGenerator}
-      getConflictIcon={getConflictIcon}
-      darkMode={darkMode}
-      setDarkMode={setDarkMode}
-      currentUser={currentUser}
-      handleLogout={handleLogout}
-      timetableTypes={timetableTypes}
-      timeSlots={timeSlots}
-      priorityLevels={priorityLevels}
-      colors={colors}
-      days={days}
-      savedTimetables={savedTimetables}
-      loadTimetable={loadTimetable}
-      deleteTimetable={deleteTimetable}
-      fetchSavedTimetables={fetchSavedTimetables}
-    />
+    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+      <TimetableGenerator
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        timetableType={timetableType}
+        setTimetableType={setTimetableType}
+        showSuccessAnimation={showSuccessAnimation}
+        timetableData={timetableData}
+        setTimetableData={setTimetableData}
+        currentActivity={currentActivity}
+        setCurrentActivity={setCurrentActivity}
+        generatedTimetable={generatedTimetable}
+        conflicts={conflicts}
+        optimizationSettings={optimizationSettings}
+        setOptimizationSettings={setOptimizationSettings}
+        handleTypeSelection={handleTypeSelection}
+        addTimeSlot={addTimeSlot}
+        removeTimeSlot={removeTimeSlot}
+        addActivity={addActivity}
+        removeActivity={removeActivity}
+        togglePreference={togglePreference}
+        generateTimetable={generateTimetable}
+        regenerateTimetable={regenerateTimetable}
+        exportTimetable={exportTimetable}
+        saveTimetable={saveTimetable}
+        resetGenerator={resetGenerator}
+        getConflictIcon={getConflictIcon}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        currentUser={currentUser}
+        handleLogout={handleLogout}
+        timetableTypes={timetableTypes}
+        timeSlots={timeSlots}
+        priorityLevels={priorityLevels}
+        colors={colors}
+        days={days}
+        savedTimetables={savedTimetables}
+        loadTimetable={loadTimetable}
+        deleteTimetable={deleteTimetable}
+        fetchSavedTimetables={fetchSavedTimetables}
+      />
+    </div>
   );
 };
 
