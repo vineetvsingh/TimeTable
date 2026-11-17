@@ -30,7 +30,7 @@ const AuthPage = ({
     };
 
     return (
-        <div className={`min-h-screen flex items-center justify-center transition-all duration-500 ${darkMode
+        <div className={`min-h-screen flex items-center justify-center px-4 py-20 transition-all duration-500 ${darkMode
             ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
             : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
             }`}>
@@ -47,7 +47,7 @@ const AuthPage = ({
                 </button>
             </div>
 
-            <div className={`w-full max-w-md p-8 m-4 rounded-2xl shadow-2xl transition-all duration-300 ${darkMode
+            <div className={`w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl transition-all duration-300 ${darkMode
                 ? 'bg-gray-800/90 backdrop-blur-lg border border-gray-700'
                 : 'bg-white/90 backdrop-blur-lg'
                 } ${showSuccessAnimation ? 'transform scale-105' : ''}`}>

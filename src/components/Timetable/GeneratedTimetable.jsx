@@ -12,6 +12,8 @@ const GeneratedTimetable = ({
     regenerateTimetable,
     exportTimetable,
     saveTimetable,
+    isSaving,
+    isSavedTimetable,
     setCurrentStep,
     darkMode,
     resetGenerator,
@@ -19,9 +21,14 @@ const GeneratedTimetable = ({
 }) => {
     return (
         <div className="animate-fadeIn">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            {/* Only shown when printing */}
+            <h1 className="hidden print:block text-2xl font-bold text-black mb-4">
+                {timetableData.name || 'Timetable'}
+            </h1>
+
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 print:hidden">
                 <div>
-                    <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <h2 className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                         Your Smart Timetable
                     </h2>
                     <div className="flex items-center mt-2">
@@ -48,10 +55,11 @@ const GeneratedTimetable = ({
                     </button>
                     <button
                         onClick={saveTimetable}
-                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                        disabled={isSaving}
+                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
                     >
                         <Cloud className="w-4 h-4 inline mr-2" />
-                        Save to Cloud
+                        {isSaving ? 'Saving...' : isSavedTimetable ? 'Update Saved' : 'Save to Cloud'}
                     </button>
                     <button
                         onClick={exportTimetable}
@@ -70,11 +78,13 @@ const GeneratedTimetable = ({
                 </div>
             </div>
 
-            <ConflictsPanel conflicts={conflicts} darkMode={darkMode} />
+            <div className="print:hidden">
+                <ConflictsPanel conflicts={conflicts} darkMode={darkMode} />
+            </div>
 
             {/* Success Message */}
             {conflicts.length === 0 && (
-                <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
+                <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6 print:hidden">
                     <div className="flex items-center text-green-600 font-bold">
                         <CheckCircle className="w-6 h-6 mr-2" />
                         Perfect Schedule Generated!
@@ -92,16 +102,18 @@ const GeneratedTimetable = ({
                 getConflictIcon={getConflictIcon}
             />
 
-            <StatsDashboard
-                timetableData={timetableData}
-                generatedTimetable={generatedTimetable}
-                conflicts={conflicts}
-                darkMode={darkMode}
-            />
+            <div className="print:hidden">
+                <StatsDashboard
+                    timetableData={timetableData}
+                    generatedTimetable={generatedTimetable}
+                    conflicts={conflicts}
+                    darkMode={darkMode}
+                />
 
-            <AlgorithmInfo darkMode={darkMode} />
+                <AlgorithmInfo darkMode={darkMode} />
+            </div>
 
-            <div className="mt-8 flex justify-between">
+            <div className="mt-8 flex flex-wrap justify-between gap-3 print:hidden">
                 <button
                     onClick={resetGenerator}
                     className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode

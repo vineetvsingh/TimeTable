@@ -17,7 +17,7 @@ const ActivityForm = ({
 }) => {
     return (
         <div className="animate-fadeIn">
-            <h2 className={`text-3xl font-bold mb-8 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+            <h2 className={`text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                 Add Activities & Subjects
             </h2>
 
@@ -113,7 +113,7 @@ const ActivityForm = ({
                             <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Priority
                             </label>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {priorityLevels.map(priority => (
                                     <button
                                         key={priority}
@@ -139,7 +139,7 @@ const ActivityForm = ({
                             <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Color Theme
                             </label>
-                            <div className="flex gap-2">
+                            <div className="flex flex-wrap gap-2">
                                 {colors.slice(0, 6).map(color => (
                                     <button
                                         key={color.name}
@@ -308,7 +308,7 @@ const ActivityForm = ({
                     </div>
                 )}
 
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                     <button
                         onClick={() => setCurrentStep(2)}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode
@@ -321,7 +321,7 @@ const ActivityForm = ({
                     <button
                         onClick={generateTimetable}
                         disabled={timetableData.activities.length === 0}
-                        className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${timetableData.activities.length === 0
+                        className={`px-5 sm:px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${timetableData.activities.length === 0
                             ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
                             : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg animate-pulse'
                             }`}

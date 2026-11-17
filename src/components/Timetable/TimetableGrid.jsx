@@ -2,8 +2,8 @@ import React from 'react';
 
 const TimetableGrid = ({ generatedTimetable, timetableData, darkMode, getConflictIcon }) => {
     return (
-        <div className="overflow-x-auto rounded-xl shadow-xl">
-            <table className={`w-full border-collapse ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+        <div className="overflow-x-auto rounded-xl shadow-xl print:overflow-visible print:shadow-none print-colors">
+            <table className={`w-full min-w-[640px] print:min-w-0 border-collapse ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
                 <thead>
                     <tr className={darkMode ? 'bg-gray-900' : 'bg-gradient-to-r from-blue-500 to-purple-500'}>
                         <th className={`p-4 text-left font-bold ${darkMode ? 'text-gray-300' : 'text-white'}`}>

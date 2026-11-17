@@ -3,7 +3,7 @@ import React from 'react';
 const TypeSelection = ({ timetableTypes, handleTypeSelection, darkMode }) => {
     return (
         <div className="animate-fadeIn">
-            <h2 className={`text-3xl font-bold mb-8 text-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+            <h2 className={`text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                 Choose Your Timetable Type
             </h2>
             <div className="grid md:grid-cols-2 gap-6">

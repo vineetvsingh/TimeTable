@@ -14,7 +14,7 @@ const Configuration = ({
 }) => {
     return (
         <div className="animate-fadeIn">
-            <h2 className={`text-3xl font-bold mb-8 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+            <h2 className={`text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
                 Configure Your Timetable
             </h2>
 
@@ -39,7 +39,7 @@ const Configuration = ({
                     <label className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Select Time Slots
                     </label>
-                    <div className="grid grid-cols-4 md:grid-cols-6 gap-2 mb-4">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4">
                         {timeSlots.map((slot) => (
                             <button
                                 key={slot}
@@ -118,7 +118,7 @@ const Configuration = ({
                     </div>
                 </div>
 
-                <div className="flex justify-between">
+                <div className="flex flex-wrap justify-between gap-3">
                     <button
                         onClick={() => setCurrentStep(1)}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode

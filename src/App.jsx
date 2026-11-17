@@ -15,6 +15,7 @@ import {
   getDoc,
   collection,
   addDoc,
+  updateDoc,
   serverTimestamp,
   query,
   where,
@@ -116,6 +117,10 @@ const IntegratedTimetableApp = () => {
 
   // Saved Timetables State
   const [savedTimetables, setSavedTimetables] = useState([]);
+  // Firestore id of the timetable being worked on, once it has been saved or
+  // loaded, so later saves update that document instead of creating copies.
+  const [currentTimetableId, setCurrentTimetableId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Constants
   const timetableTypes = [
@@ -440,6 +445,7 @@ const IntegratedTimetableApp = () => {
     setCurrentActivity(EMPTY_ACTIVITY);
     setGeneratedTimetable(null);
     setConflicts([]);
+    setCurrentTimetableId(null);
   };
 
   const getConflictIcon = (day, slot) => {
@@ -511,6 +517,7 @@ const IntegratedTimetableApp = () => {
       activities: timetable.activities || [],
       constraints: []
     };
+    setCurrentTimetableId(timetable.id);
     setTimetableType(timetable.type || '');
     setTimetableData(loadedData);
     setGeneratedTimetable(timetable.schedule || {});
@@ -524,6 +531,8 @@ const IntegratedTimetableApp = () => {
     try {
       await deleteDoc(doc(db, 'timetables', id));
       setSavedTimetables(prev => prev.filter(t => t.id !== id));
+      // If the open timetable was deleted, the next save should create it anew.
+      setCurrentTimetableId(prev => (prev === id ? null : prev));
     } catch (error) {
       console.error('Error deleting timetable:', error);
       alert('Failed to delete timetable.');
@@ -531,26 +540,48 @@ const IntegratedTimetableApp = () => {
   };
 
   const saveTimetable = async () => {
-    if (!currentUser || !generatedTimetable) return;
+    if (!currentUser || !generatedTimetable || isSaving) return;
 
-    const saveData = {
+    const content = {
       name: timetableData.name,
       type: timetableType,
       schedule: generatedTimetable,
       activities: timetableData.activities,
       timeSlots: timetableData.timeSlots,
-      userId: currentUser.uid,
-      userEmail: currentUser.email,
-      createdAt: serverTimestamp()
+      updatedAt: serverTimestamp()
     };
 
+    const createNew = async () => {
+      const ref = await addDoc(collection(db, 'timetables'), {
+        ...content,
+        userId: currentUser.uid,
+        userEmail: currentUser.email,
+        createdAt: serverTimestamp()
+      });
+      setCurrentTimetableId(ref.id);
+    };
+
+    setIsSaving(true);
     try {
-      await addDoc(collection(db, 'timetables'), saveData);
-      alert('Timetable saved to cloud successfully!');
+      if (currentTimetableId) {
+        try {
+          await updateDoc(doc(db, 'timetables', currentTimetableId), content);
+        } catch (error) {
+          // The saved copy was deleted elsewhere: save it as a new one.
+          if (error.code !== 'not-found') throw error;
+          await createNew();
+        }
+        alert('Saved timetable updated!');
+      } else {
+        await createNew();
+        alert('Timetable saved to cloud successfully!');
+      }
       fetchSavedTimetables();
     } catch (error) {
       console.error('Error saving to cloud:', error);
       alert('Failed to save to cloud. Please check your internet connection.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -603,6 +634,8 @@ const IntegratedTimetableApp = () => {
         regenerateTimetable={regenerateTimetable}
         exportTimetable={exportTimetable}
         saveTimetable={saveTimetable}
+        isSaving={isSaving}
+        isSavedTimetable={Boolean(currentTimetableId)}
         resetGenerator={resetGenerator}
         getConflictIcon={getConflictIcon}
         darkMode={darkMode}
