@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calendar, Download, Trash2, Clock, User, Printer } from 'lucide-react';
+import { Calendar, Download, Trash2, Clock, User, Printer, RefreshCw, AlertCircle } from 'lucide-react';
 
-const SavedTimetables = ({ savedTimetables, loadTimetable, printTimetable, deleteTimetable, darkMode }) => {
+const SavedTimetables = ({ savedTimetables, savedStatus, onRetry, loadTimetable, printTimetable, deleteTimetable, darkMode }) => {
     const formatDate = (timestamp) => {
         if (!timestamp) return 'Unknown date';
         const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -27,6 +27,39 @@ const SavedTimetables = ({ savedTimetables, loadTimetable, printTimetable, delet
                 return <Calendar className="w-5 h-5" />;
         }
     };
+
+    // Only show the full-page states when there is nothing to list yet; while
+    // refreshing an existing list, keep showing it.
+    if (savedTimetables.length === 0 && (savedStatus === 'loading' || savedStatus === 'idle')) {
+        return (
+            <div className="text-center py-12" role="status">
+                <RefreshCw className="w-10 h-10 mx-auto mb-4 animate-spin text-purple-500" aria-hidden="true" />
+                <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>Loading your timetables...</p>
+            </div>
+        );
+    }
+
+    if (savedStatus === 'error' && savedTimetables.length === 0) {
+        return (
+            <div className="text-center py-12" role="alert">
+                <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" aria-hidden="true" />
+                <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    Couldn't load your timetables
+                </h3>
+                <p className={`mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Check your internet connection and try again.
+                </p>
+                <button
+                    type="button"
+                    onClick={onRetry}
+                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg"
+                >
+                    <RefreshCw className="w-4 h-4" aria-hidden="true" />
+                    Try again
+                </button>
+            </div>
+        );
+    }
 
     if (savedTimetables.length === 0) {
         return (

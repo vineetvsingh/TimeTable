@@ -43,6 +43,7 @@ const TimetableGenerator = ({
     colors,
     days,
     savedTimetables = [],
+    savedStatus,
     loadTimetable,
     deleteTimetable,
     fetchSavedTimetables
@@ -148,6 +149,8 @@ const TimetableGenerator = ({
                         }`}>
                         <SavedTimetables
                             savedTimetables={savedTimetables}
+                            savedStatus={savedStatus}
+                            onRetry={fetchSavedTimetables}
                             loadTimetable={(timetable) => {
                                 loadTimetable(timetable);
                                 setView('generator');

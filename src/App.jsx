@@ -27,6 +27,7 @@ import { Users, Calendar, User, Clock, AlertCircle } from 'lucide-react';
 import AuthPage from './components/Auth/AuthPage';
 import LoadingScreen from './components/Common/LoadingScreen';
 import TimetableGenerator from './components/Timetable/TimetableGenerator';
+import { useFeedback } from './components/Common/Feedback';
 import { greedyScheduler, detectConflicts, sortTimeSlots } from './utils/scheduler';
 
 const EMPTY_ACTIVITY = {
@@ -82,6 +83,8 @@ const authErrorMessage = (code) => {
 };
 
 const IntegratedTimetableApp = () => {
+  const { notify, confirm } = useFeedback();
+
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -117,6 +120,8 @@ const IntegratedTimetableApp = () => {
 
   // Saved Timetables State
   const [savedTimetables, setSavedTimetables] = useState([]);
+  // 'idle' | 'loading' | 'ready' | 'error'
+  const [savedStatus, setSavedStatus] = useState('idle');
   // Firestore id of the timetable being worked on, once it has been saved or
   // loaded, so later saves update that document instead of creating copies.
   const [currentTimetableId, setCurrentTimetableId] = useState(null);
@@ -313,6 +318,7 @@ const IntegratedTimetableApp = () => {
       setIsAuthenticated(false);
       setCurrentUser(null);
       setSavedTimetables([]);
+      setSavedStatus('idle');
       resetGenerator();
       setFormData({ name: '', email: '', password: '', confirmPassword: '' });
       setAuthErrors({});
@@ -324,13 +330,13 @@ const IntegratedTimetableApp = () => {
   const handlePasswordReset = async (email) => {
     const trimmed = (email || '').trim();
     if (!trimmed) {
-      alert('Please enter your email address first.');
+      notify('Please enter your email address first.', 'error');
       return false;
     }
     try {
       setAuthSubmitting(true);
       await sendPasswordResetEmail(auth, trimmed);
-      alert('If an account exists for this email, a password reset link has been sent. Check your inbox (and spam folder).');
+      notify('If an account exists for this email, a password reset link has been sent. Check your inbox (and spam folder).', 'success');
       return true;
     } catch (error) {
       console.error('Password reset error:', error);
@@ -342,7 +348,7 @@ const IntegratedTimetableApp = () => {
       } else if (error.code === 'auth/too-many-requests') {
         errorMessage = 'Too many requests. Please try again later.';
       }
-      alert(errorMessage);
+      notify(errorMessage, 'error');
       return false;
     } finally {
       setAuthSubmitting(false);
@@ -477,7 +483,7 @@ const IntegratedTimetableApp = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error exporting timetable:', error);
-      alert('Error exporting timetable. Please try again.');
+      notify('Error exporting timetable. Please try again.', 'error');
     }
   };
 
@@ -486,6 +492,7 @@ const IntegratedTimetableApp = () => {
   const fetchSavedTimetables = useCallback(async () => {
     if (!currentUid) return;
 
+    setSavedStatus('loading');
     try {
       const q = query(
         collection(db, 'timetables'),
@@ -500,8 +507,10 @@ const IntegratedTimetableApp = () => {
         return dateB - dateA;
       });
       setSavedTimetables(timetables);
+      setSavedStatus('ready');
     } catch (error) {
       console.error('Error fetching timetables:', error);
+      setSavedStatus('error');
     }
   }, [currentUid]);
 
@@ -523,19 +532,28 @@ const IntegratedTimetableApp = () => {
     setGeneratedTimetable(timetable.schedule || {});
     setConflicts(detectConflicts(timetable.schedule || {}, loadedData.activities, loadedData.timeSlots));
     setCurrentStep(4);
+    notify(`Opened "${loadedData.name || 'Untitled Timetable'}"`, 'info');
   };
 
   const deleteTimetable = async (id) => {
-    if (!confirm('Are you sure you want to delete this timetable?')) return;
+    const name = savedTimetables.find(t => t.id === id)?.name || 'this timetable';
+    const ok = await confirm({
+      title: 'Delete timetable?',
+      message: `"${name}" will be permanently deleted. This can't be undone.`,
+      confirmLabel: 'Delete',
+      danger: true
+    });
+    if (!ok) return;
 
     try {
       await deleteDoc(doc(db, 'timetables', id));
       setSavedTimetables(prev => prev.filter(t => t.id !== id));
       // If the open timetable was deleted, the next save should create it anew.
       setCurrentTimetableId(prev => (prev === id ? null : prev));
+      notify('Timetable deleted.', 'success');
     } catch (error) {
       console.error('Error deleting timetable:', error);
-      alert('Failed to delete timetable.');
+      notify('Failed to delete timetable. Please try again.', 'error');
     }
   };
 
@@ -571,15 +589,15 @@ const IntegratedTimetableApp = () => {
           if (error.code !== 'not-found') throw error;
           await createNew();
         }
-        alert('Saved timetable updated!');
+        notify('Saved timetable updated.', 'success');
       } else {
         await createNew();
-        alert('Timetable saved to cloud successfully!');
+        notify('Timetable saved to the cloud.', 'success');
       }
       fetchSavedTimetables();
     } catch (error) {
       console.error('Error saving to cloud:', error);
-      alert('Failed to save to cloud. Please check your internet connection.');
+      notify('Failed to save to the cloud. Please check your internet connection.', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -648,6 +666,7 @@ const IntegratedTimetableApp = () => {
         colors={colors}
         days={days}
         savedTimetables={savedTimetables}
+        savedStatus={savedStatus}
         loadTimetable={loadTimetable}
         deleteTimetable={deleteTimetable}
         fetchSavedTimetables={fetchSavedTimetables}
