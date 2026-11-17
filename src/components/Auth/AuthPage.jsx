@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sparkles, LogIn, UserPlus, User, Mail, Lock, Eye, EyeOff, Sun, Moon, ArrowLeft, Send } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 const AuthPage = ({
     isLogin,
@@ -10,12 +11,11 @@ const AuthPage = ({
     handleGoogleLogin,
     authErrors,
     authLoading,
-    darkMode,
-    setDarkMode,
     showPassword,
     setShowPassword,
     handlePasswordReset
 }) => {
+    const { darkMode, toggleDarkMode } = useTheme();
     const [isResettingPassword, setIsResettingPassword] = useState(false);
     const [resetEmail, setResetEmail] = useState('');
 
@@ -29,42 +29,30 @@ const AuthPage = ({
     };
 
     return (
-        <div className={`min-h-screen flex items-center justify-center px-4 py-20 transition-all duration-500 ${darkMode
-            ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
-            : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
-            }`}>
+        <div className="min-h-screen flex items-center justify-center px-4 py-20 transition-all duration-500 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
             {/* Dark Mode Toggle */}
             <div className="absolute top-4 right-4 z-50">
                 <button
                     type="button"
-                    onClick={() => setDarkMode(!darkMode)}
+                    onClick={() => toggleDarkMode()}
                     aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                    className={`p-3 rounded-full transition-all duration-300 ${darkMode
-                        ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 shadow-lg shadow-yellow-400/20'
-                        : 'bg-white text-gray-800 hover:bg-gray-100 shadow-lg shadow-gray-400/20'
-                        }`}
+                    className="p-3 rounded-full transition-all duration-300 bg-white text-gray-800 hover:bg-gray-100 shadow-lg shadow-gray-400/20 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-700 dark:shadow-yellow-400/20"
                 >
                     {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
                 </button>
             </div>
 
-            <div className={`w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl transition-all duration-300 ${darkMode
-                ? 'bg-gray-800/90 backdrop-blur-lg border border-gray-700'
-                : 'bg-white/90 backdrop-blur-lg'
-                }`}>
+            <div className="w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur-lg dark:bg-gray-800/90 dark:border dark:border-gray-700">
 
                 {/* Header */}
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
-                        <Sparkles className={`w-8 h-8 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                        <h1 className={`text-3xl font-bold ml-2 bg-gradient-to-r ${darkMode
-                            ? 'from-blue-400 via-purple-400 to-pink-400'
-                            : 'from-blue-600 via-purple-600 to-pink-600'
-                            } bg-clip-text text-transparent`}>
+                        <Sparkles className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                        <h1 className="text-3xl font-bold ml-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                             Smart Timetable
                         </h1>
                     </div>
-                    <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className="text-gray-600 dark:text-gray-300">
                         {isResettingPassword
                             ? 'Reset your password'
                             : (isLogin ? 'Welcome back!' : 'Create your account')}
@@ -74,7 +62,7 @@ const AuthPage = ({
                 {!isResettingPassword ? (
                     <>
                         {/* Toggle Buttons */}
-                        <div className={`flex rounded-lg p-1 mb-6 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                        <div className="flex rounded-lg p-1 mb-6 bg-gray-100 dark:bg-gray-700">
                             <button
                                 type="button"
                                 aria-pressed={isLogin}
@@ -83,7 +71,7 @@ const AuthPage = ({
                                 }}
                                 className={`flex-1 py-2 px-4 rounded-md font-semibold transition-all duration-200 ${isLogin
                                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                                    : darkMode ? 'text-gray-300' : 'text-gray-600'
+                                    : 'text-gray-600 dark:text-gray-300'
                                     }`}
                             >
                                 <LogIn className="w-4 h-4 inline mr-2" />
@@ -97,7 +85,7 @@ const AuthPage = ({
                                 }}
                                 className={`flex-1 py-2 px-4 rounded-md font-semibold transition-all duration-200 ${!isLogin
                                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                                    : darkMode ? 'text-gray-300' : 'text-gray-600'
+                                    : 'text-gray-600 dark:text-gray-300'
                                     }`}
                             >
                                 <UserPlus className="w-4 h-4 inline mr-2" />
@@ -109,12 +97,11 @@ const AuthPage = ({
                         <form onSubmit={handleAuthSubmit} className="space-y-4">
                             {!isLogin && (
                                 <div>
-                                    <label htmlFor="auth-name" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    <label htmlFor="auth-name" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                         Full Name
                                     </label>
                                     <div className="relative">
-                                        <User aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
-                                            }`} />
+                                        <User aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
                                         <input
                                             type="text"
                                             id="auth-name"
@@ -124,10 +111,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.name ? 'auth-name-error' : undefined}
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
-                                                ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
-                                                : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                                } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.name ? 'border-red-500' : ''
+                                            className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.name ? 'border-red-500' : ''
                                                 }`}
                                             placeholder="Enter your full name"
                                         />
@@ -137,12 +121,11 @@ const AuthPage = ({
                             )}
 
                             <div>
-                                <label htmlFor="auth-email" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                <label htmlFor="auth-email" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                     Email Address
                                 </label>
                                 <div className="relative">
-                                    <Mail aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`} />
+                                    <Mail aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
                                     <input
                                         type="email"
                                         id="auth-email"
@@ -152,10 +135,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.email ? 'auth-email-error' : undefined}
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
-                                            ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
-                                            : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                            } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.email ? 'border-red-500' : ''
+                                        className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.email ? 'border-red-500' : ''
                                             }`}
                                         placeholder="Enter your email"
                                     />
@@ -164,12 +144,11 @@ const AuthPage = ({
                             </div>
 
                             <div>
-                                <label htmlFor="auth-password" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                <label htmlFor="auth-password" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                     Password
                                 </label>
                                 <div className="relative">
-                                    <Lock aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`} />
+                                    <Lock aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         id="auth-password"
@@ -179,10 +158,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.password ? 'auth-password-error' : undefined}
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        className={`w-full pl-10 pr-12 py-3 rounded-lg transition-all duration-200 ${darkMode
-                                            ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
-                                            : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                            } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.password ? 'border-red-500' : ''
+                                        className={`w-full pl-10 pr-12 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.password ? 'border-red-500' : ''
                                             }`}
                                         placeholder="Enter your password"
                                     />
@@ -190,8 +166,7 @@ const AuthPage = ({
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                        className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
-                                            }`}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                                     >
                                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
@@ -201,12 +176,11 @@ const AuthPage = ({
 
                             {!isLogin && (
                                 <div>
-                                    <label htmlFor="auth-confirmPassword" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    <label htmlFor="auth-confirmPassword" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                         Confirm Password
                                     </label>
                                     <div className="relative">
-                                        <Lock aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
-                                            }`} />
+                                        <Lock aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
                                         <input
                                             type={showPassword ? 'text' : 'password'}
                                             id="auth-confirmPassword"
@@ -216,10 +190,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.confirmPassword ? 'auth-confirmPassword-error' : undefined}
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
-                                            className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
-                                                ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
-                                                : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                                } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.confirmPassword ? 'border-red-500' : ''
+                                            className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.confirmPassword ? 'border-red-500' : ''
                                                 }`}
                                             placeholder="Confirm your password"
                                         />
@@ -238,10 +209,10 @@ const AuthPage = ({
 
                             <div className="relative my-6">
                                 <div className="absolute inset-0 flex items-center">
-                                    <div className={`w-full border-t ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}></div>
+                                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                                 </div>
                                 <div className="relative flex justify-center text-sm">
-                                    <span className={`px-2 ${darkMode ? 'bg-gray-800 text-gray-400' : 'bg-white text-gray-500'}`}>
+                                    <span className="px-2 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                                         Or continue with
                                     </span>
                                 </div>
@@ -251,10 +222,7 @@ const AuthPage = ({
                                 type="button"
                                 onClick={handleGoogleLogin}
                                 disabled={authLoading}
-                                className={`w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 border-2 ${darkMode
-                                    ? 'bg-white text-gray-800 border-white hover:bg-gray-100'
-                                    : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'
-                                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className="w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 border-2 bg-white text-gray-800 border-gray-200 hover:bg-gray-50 dark:border-white dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                                     <path
@@ -284,7 +252,7 @@ const AuthPage = ({
                                 <button
                                     type="button"
                                     onClick={() => setIsResettingPassword(true)}
-                                    className={`text-sm ${darkMode ? 'text-purple-400 hover:text-purple-300' : 'text-blue-600 hover:text-blue-700'}`}
+                                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-purple-400 dark:hover:text-purple-300"
                                 >
                                     Forgot password?
                                 </button>
@@ -294,27 +262,23 @@ const AuthPage = ({
                 ) : (
                     <form onSubmit={onResetSubmit} className="space-y-4">
                         <div>
-                            <label htmlFor="reset-email" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <label htmlFor="reset-email" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                 Email Address
                             </label>
                             <div className="relative">
-                                <Mail aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
-                                    }`} />
+                                <Mail aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
                                 <input
                                     id="reset-email"
                                     type="email"
                                     autoComplete="email"
                                     value={resetEmail}
                                     onChange={(e) => setResetEmail(e.target.value)}
-                                    className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
-                                        ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
-                                        : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                        } focus:outline-none focus:ring-4 focus:ring-blue-500/20`}
+                                    className="w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
                                     placeholder="Enter your email"
                                     required
                                 />
                             </div>
-                            <p className={`text-xs mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            <p className="text-xs mt-2 text-gray-500 dark:text-gray-400">
                                 We'll send you a link to reset your password.
                             </p>
                         </div>
@@ -335,10 +299,7 @@ const AuthPage = ({
                         <button
                             type="button"
                             onClick={() => setIsResettingPassword(false)}
-                            className={`w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 ${darkMode
-                                ? 'text-gray-300 hover:bg-gray-800'
-                                : 'text-gray-600 hover:bg-gray-100'
-                                }`}
+                            className="w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                         >
                             <ArrowLeft className="w-4 h-4" />
                             Back to Login

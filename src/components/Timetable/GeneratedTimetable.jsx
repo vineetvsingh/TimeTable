@@ -4,21 +4,21 @@ import ConflictsPanel from './ConflictsPanel';
 import TimetableGrid from './TimetableGrid';
 import StatsDashboard from './StatsDashboard';
 import AlgorithmInfo from './AlgorithmInfo';
+import { useTimetable } from '../../context/TimetableContext';
 
-const GeneratedTimetable = ({
-    generatedTimetable,
-    conflicts,
-    timetableData,
-    regenerateTimetable,
-    exportTimetable,
-    saveTimetable,
-    isSaving,
-    isSavedTimetable,
-    setCurrentStep,
-    darkMode,
-    resetGenerator,
-    getConflictIcon
-}) => {
+const GeneratedTimetable = () => {
+    const {
+        generatedTimetable,
+        conflicts,
+        timetableData,
+        generateTimetable,
+        exportTimetable,
+        saveTimetable,
+        isSaving,
+        isSavedTimetable,
+        setCurrentStep,
+        resetGenerator
+    } = useTimetable();
     return (
         <div className="animate-fadeIn">
             {/* Only shown when printing */}
@@ -28,7 +28,7 @@ const GeneratedTimetable = ({
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 print:hidden">
                 <div>
-                    <h2 className={`text-2xl sm:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
                         Your Smart Timetable
                     </h2>
                     <div className="flex items-center mt-2">
@@ -47,7 +47,7 @@ const GeneratedTimetable = ({
                 </div>
                 <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
                     <button
-                        onClick={regenerateTimetable}
+                        onClick={generateTimetable}
                         className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
                     >
                         <RefreshCw className="w-4 h-4 inline mr-2" />
@@ -79,7 +79,7 @@ const GeneratedTimetable = ({
             </div>
 
             <div className="print:hidden">
-                <ConflictsPanel conflicts={conflicts} darkMode={darkMode} />
+                <ConflictsPanel conflicts={conflicts} />
             </div>
 
             {/* Success Message */}
@@ -89,7 +89,7 @@ const GeneratedTimetable = ({
                         <CheckCircle className="w-6 h-6 mr-2" />
                         Perfect Schedule Generated!
                     </div>
-                    <p className={`text-sm mt-1 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
                         Your timetable has been optimally scheduled with no conflicts. All preferences have been considered.
                     </p>
                 </div>
@@ -98,8 +98,7 @@ const GeneratedTimetable = ({
             <TimetableGrid
                 generatedTimetable={generatedTimetable}
                 timetableData={timetableData}
-                darkMode={darkMode}
-                getConflictIcon={getConflictIcon}
+                conflicts={conflicts}
             />
 
             <div className="print:hidden">
@@ -107,19 +106,15 @@ const GeneratedTimetable = ({
                     timetableData={timetableData}
                     generatedTimetable={generatedTimetable}
                     conflicts={conflicts}
-                    darkMode={darkMode}
                 />
 
-                <AlgorithmInfo darkMode={darkMode} />
+                <AlgorithmInfo />
             </div>
 
             <div className="mt-8 flex flex-wrap justify-between gap-3 print:hidden">
                 <button
                     onClick={resetGenerator}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${darkMode
-                        ? 'bg-gray-700 text-white hover:bg-gray-600'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
+                    className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                 >
                     ← Start Over
                 </button>

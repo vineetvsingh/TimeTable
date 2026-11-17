@@ -66,9 +66,8 @@ vi.mock('firebase/firestore', () => {
 });
 
 import App from './App';
-import { FeedbackProvider } from './components/Common/Feedback';
 
-const renderApp = () => render(<FeedbackProvider><App /></FeedbackProvider>);
+const renderApp = () => render(<App />);
 const button = (name) => screen.getByRole('button', { name });
 
 // Builds a school timetable with one 2-hour activity and generates it.

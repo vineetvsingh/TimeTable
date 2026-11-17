@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
 
-const ConflictsPanel = ({ conflicts, darkMode }) => {
+const ConflictsPanel = ({ conflicts }) => {
     if (conflicts.length === 0) return null;
 
     return (
@@ -12,20 +12,20 @@ const ConflictsPanel = ({ conflicts, darkMode }) => {
             </h3>
             <div className="space-y-2">
                 {conflicts.map((conflict, index) => (
-                    <div key={index} className={`text-sm p-3 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                    <div key={index} className="text-sm p-3 rounded-lg bg-white dark:bg-gray-800">
                         <span className={`inline-block px-2 py-1 rounded text-xs font-bold mr-2 ${conflict.severity === 'high'
                             ? 'bg-red-500 text-white'
                             : 'bg-amber-400 text-gray-900'
                             }`}>
                             {conflict.severity.toUpperCase()}
                         </span>
-                        <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
+                        <span className="text-gray-700 dark:text-gray-300">
                             {conflict.message}
                         </span>
                     </div>
                 ))}
             </div>
-            <div className={`mt-3 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
                 💡 Tip: Try regenerating or adjust activity preferences to resolve conflicts
             </div>
         </div>

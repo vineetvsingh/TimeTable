@@ -3,6 +3,7 @@ import React from 'react';
 import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup, within } from '@testing-library/react';
 import TimetableGrid from './TimetableGrid';
+import { ThemeProvider } from '../../context/ThemeContext';
 
 afterEach(cleanup);
 
@@ -12,12 +13,9 @@ const timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM'];
 
 const renderGrid = (schedule) =>
   render(
-    <TimetableGrid
-      generatedTimetable={schedule}
-      timetableData={{ timeSlots }}
-      darkMode={false}
-      getConflictIcon={() => null}
-    />
+    <ThemeProvider>
+      <TimetableGrid generatedTimetable={schedule} timetableData={{ timeSlots }} />
+    </ThemeProvider>
   );
 
 describe('TimetableGrid', () => {
