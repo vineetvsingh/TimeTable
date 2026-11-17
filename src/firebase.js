@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -18,12 +17,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Analytics throws in environments that don't support it (e.g. when cookies or
-// IndexedDB are blocked), so only initialise it when available.
-isSupported()
-  .then((supported) => {
-    if (supported) getAnalytics(app);
-  })
+// Analytics isn't needed to use the app, so it is loaded separately after
+// start-up. It throws where unsupported (e.g. cookies or IndexedDB blocked),
+// so only initialise it when available.
+import("firebase/analytics")
+  .then(({ getAnalytics, isSupported }) =>
+    isSupported().then((supported) => {
+      if (supported) getAnalytics(app);
+    })
+  )
   .catch(() => {});
 
 export { app, db, auth };

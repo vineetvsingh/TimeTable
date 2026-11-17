@@ -8,4 +8,16 @@ export default defineConfig({
     tailwindcss(),
     react()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Split rarely-changing libraries into their own files so browsers can
+        // keep them cached between deployments of the app code.
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-dom/client'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
+        }
+      }
+    }
+  }
 })
