@@ -5,7 +5,6 @@ const ActivityForm = ({
     currentActivity,
     setCurrentActivity,
     timetableData,
-    setTimetableData,
     addActivity,
     removeActivity,
     togglePreference,
@@ -248,8 +247,8 @@ const ActivityForm = ({
 
                 <button
                     onClick={addActivity}
-                    disabled={!currentActivity.name}
-                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name
+                    disabled={!currentActivity.name.trim()}
+                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
                         ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
                         : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
                         }`}

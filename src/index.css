@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+/* The app toggles dark mode by adding a `dark` class to <html>, so make
+   Tailwind's `dark:` variant follow that class instead of the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Custom animations used by the components (animate-fadeIn, animate-gradient). */
+@theme {
+  --animate-fadeIn: fadeIn 0.4s ease-out both;
+  --animate-gradient: gradientShift 6s ease infinite;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+}

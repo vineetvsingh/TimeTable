@@ -10,8 +10,6 @@ import SavedTimetables from './SavedTimetables';
 const TimetableGenerator = ({
     currentStep,
     setCurrentStep,
-    timetableType,
-    setTimetableType,
     showSuccessAnimation,
     timetableData,
     setTimetableData,
@@ -175,7 +173,6 @@ const TimetableGenerator = ({
                                     currentActivity={currentActivity}
                                     setCurrentActivity={setCurrentActivity}
                                     timetableData={timetableData}
-                                    setTimetableData={setTimetableData}
                                     addActivity={addActivity}
                                     removeActivity={removeActivity}
                                     togglePreference={togglePreference}

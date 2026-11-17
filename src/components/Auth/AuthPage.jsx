@@ -254,6 +254,7 @@ const AuthPage = ({
                                 </svg>
                                 Google
                             </button>
+                            {authErrors.google && <p className="text-red-500 text-sm text-center">{authErrors.google}</p>}
                         </form>
 
                         {isLogin && (
