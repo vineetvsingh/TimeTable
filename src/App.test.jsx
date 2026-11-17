@@ -79,7 +79,7 @@ const buildTimetable = async () => {
   fireEvent.click(button('Next →'));
 
   fireEvent.change(screen.getByLabelText('Activity Name *'), { target: { value: 'Maths' } });
-  fireEvent.change(screen.getByLabelText('Duration (hours)'), { target: { value: '2' } });
+  fireEvent.change(screen.getByLabelText('Duration'), { target: { value: '2' } });
   fireEvent.click(button(/Add Activity/));
   fireEvent.click(button(/Generate Smart Timetable/));
   await screen.findByText('Your Smart Timetable');
@@ -138,6 +138,29 @@ describe('App', () => {
     expect(screen.getByText('Algebra')).toBeTruthy();
     expect(screen.queryByText('Maths')).toBeNull();
     expect(button(/Add Activity/)).toBeTruthy();
+  });
+
+  it('builds a timetable with 45-minute slots', async () => {
+    renderApp();
+    fireEvent.click(await screen.findByRole('button', { name: /School Schedule/ }));
+    fireEvent.change(screen.getByLabelText('Timetable Name'), { target: { value: 'Short periods' } });
+    fireEvent.change(screen.getByLabelText('Day starts'), { target: { value: '09:00' } });
+    fireEvent.change(screen.getByLabelText('Day ends'), { target: { value: '11:00' } });
+    fireEvent.change(screen.getByLabelText('Slot length'), { target: { value: '45' } });
+    expect(button('9:45 AM')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: '10:30 AM' })).toBeNull(); // would end at 11:15
+
+    fireEvent.click(button('Select all'));
+    fireEvent.click(button('Next →'));
+    fireEvent.change(screen.getByLabelText('Activity Name *'), { target: { value: 'Maths' } });
+    fireEvent.change(screen.getByLabelText('Duration'), { target: { value: '2' } });
+    expect(screen.getByRole('option', { name: '2 slots (1 h 30 min)' })).toBeTruthy();
+    fireEvent.click(button(/Add Activity/));
+    fireEvent.click(button(/Generate Smart Timetable/));
+
+    await screen.findByText('Your Smart Timetable');
+    expect(screen.getByText('9:00 – 9:45 AM')).toBeTruthy();
+    expect(screen.getByText(/1 h 30 min/, { selector: 'table *' })).toBeTruthy();
   });
 
   it('lists, opens and deletes saved timetables with a confirmation dialog', async () => {

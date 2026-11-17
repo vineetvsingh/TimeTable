@@ -31,11 +31,9 @@ export const TIMETABLE_TYPES = [
   }
 ];
 
-export const TIME_SLOTS = [
-  '6:00 AM', '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
-  '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM',
-  '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM'
-];
+// Choices for the length of one slot (minutes). The default day (6 AM to
+// 10 PM in 60-minute slots) gives hourly slots starting 6:00 AM ... 9:00 PM.
+export const SLOT_LENGTHS = [30, 45, 50, 60, 90];
 
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -78,7 +76,10 @@ export const EMPTY_TIMETABLE = {
   name: '',
   timeSlots: [],
   activities: [],
-  constraints: []
+  constraints: [],
+  dayStart: '06:00',
+  dayEnd: '22:00',
+  slotMinutes: 60
 };
 
 export const DEFAULT_OPTIMIZATION_SETTINGS = {

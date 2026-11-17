@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { greedyScheduler, detectConflicts, sortTimeSlots } from '../utils/scheduler';
 import { storage, draftKey } from '../utils/storage';
+import { slotMinutesOf, slotPaletteFor } from '../utils/time';
 import { useSavedTimetables } from '../hooks/useSavedTimetables';
 import { useFeedback } from '../components/Common/Feedback';
 import {
@@ -101,6 +102,24 @@ export const TimetableProvider = ({ user, children }) => {
     setTimetableData(prev => ({ ...prev, timeSlots: prev.timeSlots.filter(s => s !== slot) }));
   };
 
+  // Change day start/end or slot length; selected slots that no longer exist
+  // in the new set of slots are dropped.
+  const updateSlotSettings = (changes) => {
+    setTimetableData(prev => {
+      const next = { ...prev, ...changes };
+      const palette = slotPaletteFor(next);
+      return { ...next, timeSlots: prev.timeSlots.filter(slot => palette.includes(slot)) };
+    });
+  };
+
+  const selectAllSlots = () => {
+    setTimetableData(prev => ({ ...prev, timeSlots: slotPaletteFor(prev) }));
+  };
+
+  const clearSlots = () => {
+    setTimetableData(prev => ({ ...prev, timeSlots: [] }));
+  };
+
   // --- Step 3: activities ---
 
   const cancelEditActivity = () => {
@@ -160,7 +179,8 @@ export const TimetableProvider = ({ user, children }) => {
       timetableData.activities,
       timetableData.timeSlots,
       workingDays,
-      optimizationSettings
+      optimizationSettings,
+      slotMinutesOf(timetableData)
     );
     setGeneratedTimetable(generated);
     setConflicts(conflictsFor(generated, timetableData));
@@ -185,6 +205,7 @@ export const TimetableProvider = ({ user, children }) => {
         schedule: generatedTimetable,
         activities: timetableData.activities,
         timeSlots: timetableData.timeSlots,
+        slotMinutes: slotMinutesOf(timetableData),
         exportedAt: new Date().toISOString()
       };
       const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -217,7 +238,10 @@ export const TimetableProvider = ({ user, children }) => {
         type: timetableType,
         schedule: generatedTimetable,
         activities: timetableData.activities,
-        timeSlots: timetableData.timeSlots
+        timeSlots: timetableData.timeSlots,
+        dayStart: timetableData.dayStart,
+        dayEnd: timetableData.dayEnd,
+        slotMinutes: slotMinutesOf(timetableData)
       }, currentTimetableId);
       setCurrentTimetableId(id);
       notify(wasSaved ? 'Saved timetable updated.' : 'Timetable saved to the cloud.', 'success');
@@ -232,10 +256,13 @@ export const TimetableProvider = ({ user, children }) => {
 
   const loadTimetable = (timetable) => {
     const data = {
+      ...EMPTY_TIMETABLE,
       name: timetable.name || '',
       timeSlots: timetable.timeSlots || [],
       activities: timetable.activities || [],
-      constraints: []
+      dayStart: timetable.dayStart || EMPTY_TIMETABLE.dayStart,
+      dayEnd: timetable.dayEnd || EMPTY_TIMETABLE.dayEnd,
+      slotMinutes: slotMinutesOf(timetable)
     };
     const schedule = timetable.schedule || {};
     setCurrentTimetableId(timetable.id);
@@ -292,6 +319,9 @@ export const TimetableProvider = ({ user, children }) => {
     selectType,
     addTimeSlot,
     removeTimeSlot,
+    updateSlotSettings,
+    selectAllSlots,
+    clearSlots,
     addActivity,
     startEditActivity,
     cancelEditActivity,

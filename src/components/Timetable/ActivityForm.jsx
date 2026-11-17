@@ -3,6 +3,7 @@ import { Plus, X, Sparkles, Pencil, Save } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useTimetable } from '../../context/TimetableContext';
 import { PRIORITY_LEVELS, COLORS, DAYS } from '../../constants';
+import { formatDuration, slotMinutesOf } from '../../utils/time';
 import Button from '../ui/Button';
 import { compactInputClass } from '../ui/styles';
 
@@ -20,6 +21,11 @@ const ActivityForm = () => {
         generateTimetable,
         setCurrentStep
     } = useTimetable();
+    const slotMinutes = slotMinutesOf(timetableData);
+    // With hourly slots show "2 hours"; otherwise "2 slots (1 h 30 min)".
+    const lengthLabel = (slots) => (slotMinutes === 60
+        ? formatDuration(slots * 60)
+        : `${slots} slot${slots > 1 ? 's' : ''} (${formatDuration(slots * slotMinutes)})`);
     const { darkMode } = useTheme();
     return (
         <div className="animate-fadeIn">
@@ -46,7 +52,7 @@ const ActivityForm = () => {
                         </div>
                         <div>
                             <label htmlFor="activity-duration" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                Duration (hours)
+                                Duration
                             </label>
                             <select
                                 id="activity-duration"
@@ -55,7 +61,7 @@ const ActivityForm = () => {
                                 className={compactInputClass}
                             >
                                 {[1, 2, 3, 4].map(num => (
-                                    <option key={num} value={num}>{num} hour{num > 1 ? 's' : ''}</option>
+                                    <option key={num} value={num}>{lengthLabel(num)}</option>
                                 ))}
                             </select>
                         </div>
@@ -310,7 +316,7 @@ const ActivityForm = () => {
                                                 )}
                                             </div>
                                             <div className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
-                                                <div>⏱️ Duration: {activity.duration} hour{activity.duration > 1 ? 's' : ''}</div>
+                                                <div>⏱️ Duration: {lengthLabel(activity.duration)}</div>
                                                 {activity.instructor && <div>👤 Instructor: {activity.instructor}</div>}
                                                 {activity.room && <div>📍 Room: {activity.room}</div>}
                                             </div>

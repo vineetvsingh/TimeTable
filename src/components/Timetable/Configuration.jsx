@@ -1,9 +1,10 @@
 import React from 'react';
 import { Info } from 'lucide-react';
-import { TIME_SLOTS } from '../../constants';
+import { SLOT_LENGTHS } from '../../constants';
+import { slotPaletteFor, formatDuration } from '../../utils/time';
 import { useTimetable } from '../../context/TimetableContext';
 import Button from '../ui/Button';
-import { inputClass } from '../ui/styles';
+import { inputClass, labelClass } from '../ui/styles';
 
 const Configuration = () => {
     const {
@@ -11,10 +12,16 @@ const Configuration = () => {
         setTimetableData,
         addTimeSlot,
         removeTimeSlot,
+        updateSlotSettings,
+        selectAllSlots,
+        clearSlots,
         optimizationSettings,
         setOptimizationSettings,
         setCurrentStep
     } = useTimetable();
+    const palette = slotPaletteFor(timetableData);
+    const fieldClass = `${inputClass} p-3`;
+
     return (
         <div className="animate-fadeIn">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-800 dark:text-white">
@@ -37,11 +44,69 @@ const Configuration = () => {
                 </div>
 
                 <div>
-                    <p id="slots-label" className="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
-                        Select Time Slots
+                    <p className="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                        Day &amp; Slot Length
                     </p>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                        <div>
+                            <label htmlFor="day-start" className={labelClass}>Day starts</label>
+                            <input
+                                id="day-start"
+                                type="time"
+                                step="300"
+                                className={fieldClass}
+                                value={timetableData.dayStart}
+                                onChange={(e) => e.target.value && updateSlotSettings({ dayStart: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="day-end" className={labelClass}>Day ends</label>
+                            <input
+                                id="day-end"
+                                type="time"
+                                step="300"
+                                className={fieldClass}
+                                value={timetableData.dayEnd}
+                                onChange={(e) => e.target.value && updateSlotSettings({ dayEnd: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="slot-length" className={labelClass}>Slot length</label>
+                            <select
+                                id="slot-length"
+                                className={fieldClass}
+                                value={timetableData.slotMinutes}
+                                onChange={(e) => updateSlotSettings({ slotMinutes: Number(e.target.value) })}
+                            >
+                                {SLOT_LENGTHS.map(minutes => (
+                                    <option key={minutes} value={minutes}>{formatDuration(minutes)}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <p id="slots-label" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            Select Time Slots
+                        </p>
+                        {palette.length > 0 && (
+                            <div className="flex gap-2">
+                                <Button variant="secondary" size="sm" onClick={selectAllSlots}>Select all</Button>
+                                <Button variant="secondary" size="sm" onClick={clearSlots} disabled={timetableData.timeSlots.length === 0}>
+                                    Clear
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                    {palette.length === 0 && (
+                        <p role="alert" className="text-sm text-red-600 dark:text-red-400 mb-4">
+                            No slots fit: make sure the day ends at least one slot length after it starts.
+                        </p>
+                    )}
                     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4" role="group" aria-labelledby="slots-label">
-                        {TIME_SLOTS.map((slot) => (
+                        {palette.map((slot) => (
                             <button
                                 type="button"
                                 key={slot}

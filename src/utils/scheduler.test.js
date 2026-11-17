@@ -94,6 +94,23 @@ describe('greedyScheduler', () => {
   });
 });
 
+describe('greedyScheduler with custom slot lengths', () => {
+  it('fills back-to-back 45-minute slots', () => {
+    const slots = ['9:00 AM', '9:45 AM', '10:30 AM'];
+    const schedule = greedyScheduler([{ id: 1, name: 'Lab', duration: 2, priority: 'high' }], slots, ['Monday'], {}, 45);
+    const used = Object.keys(schedule.Monday);
+    expect(used).toHaveLength(2);
+    expect(slots.indexOf(used[1]) - slots.indexOf(used[0])).toBe(1);
+  });
+
+  it('never splits an activity across a skipped break', () => {
+    // 12:00 PM is not selected (lunch), so 11 AM + 1 PM are not back to back.
+    const slots = ['11:00 AM', '1:00 PM'];
+    const schedule = greedyScheduler([{ id: 1, name: 'Lab', duration: 2, priority: 'high' }], slots, ['Monday'], {});
+    expect(schedule.Monday).toEqual({});
+  });
+});
+
 describe('detectConflicts', () => {
   it('reports nothing for a valid schedule, including multi-hour and shared-instructor activities', () => {
     const acts = [

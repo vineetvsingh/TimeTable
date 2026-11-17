@@ -1,5 +1,6 @@
 // Scheduling helpers: pure functions so they can be reasoned about and tested
 // independently of React state.
+import { toMinutes } from './time';
 
 const PRIORITY_ORDER = { high: 3, medium: 2, low: 1 };
 const PRIORITY_BONUS = { high: 8, medium: 4, low: 2 };
@@ -19,7 +20,7 @@ export const toHour24 = (label) => {
 };
 
 export const sortTimeSlots = (slots) =>
-  [...slots].sort((a, b) => toHour24(a) - toHour24(b));
+  [...slots].sort((a, b) => toMinutes(a) - toMinutes(b));
 
 /** Days on which an activity is allowed to be placed. */
 export const eligibleDaysFor = (activity, workingDays) => {
@@ -29,7 +30,7 @@ export const eligibleDaysFor = (activity, workingDays) => {
     : workingDays;
 };
 
-const findBestSlot = (activity, schedule, timeSlots, candidateDays, settings) => {
+const findBestSlot = (activity, schedule, timeSlots, candidateDays, settings, slotMinutes) => {
   const duration = activity.duration || 1;
   const preferredTimes = activity.preferredTimes || [];
   const avoidTimes = activity.avoidTimes || [];
@@ -38,10 +39,12 @@ const findBestSlot = (activity, schedule, timeSlots, candidateDays, settings) =>
 
   candidateDays.forEach((day) => {
     timeSlots.forEach((time, timeIndex) => {
-      // Every hour the activity occupies must exist, be free and not be avoided.
+      // Every slot the activity occupies must exist, be free, not be avoided,
+      // and follow straight on from the previous one (no skipped break).
       for (let i = 0; i < duration; i++) {
         const checkTime = timeSlots[timeIndex + i];
         if (!checkTime || schedule[day][checkTime] || avoidTimes.includes(checkTime)) return;
+        if (i > 0 && toMinutes(checkTime) - toMinutes(timeSlots[timeIndex + i - 1]) !== slotMinutes) return;
       }
 
       let score = 0;
@@ -63,8 +66,8 @@ const findBestSlot = (activity, schedule, timeSlots, candidateDays, settings) =>
       }
 
       if (activity.priority !== 'high') {
-        const hour = toHour24(time);
-        if (hour < 9 || hour > 17) score -= 2;
+        const start = toMinutes(time);
+        if (start < 9 * 60 || start >= 18 * 60) score -= 2;
       }
 
       if (score > bestScore) {
@@ -81,8 +84,9 @@ const findBestSlot = (activity, schedule, timeSlots, candidateDays, settings) =>
  * Greedy scheduler. Higher-priority activities (and those with time
  * preferences) are placed first. Recurring activities are placed once on
  * every eligible day; others are placed once in the week.
+ * An activity's `duration` is a number of slots, each `slotMinutes` long.
  */
-export const greedyScheduler = (activities, timeSlots, workingDays, settings = {}) => {
+export const greedyScheduler = (activities, timeSlots, workingDays, settings = {}, slotMinutes = 60) => {
   const schedule = {};
   workingDays.forEach((day) => {
     schedule[day] = {};
@@ -104,11 +108,11 @@ export const greedyScheduler = (activities, timeSlots, workingDays, settings = {
     const days = eligibleDaysFor(activity, workingDays);
     if (activity.recurring) {
       days.forEach((day) => {
-        const slot = findBestSlot(activity, schedule, timeSlots, [day], settings);
+        const slot = findBestSlot(activity, schedule, timeSlots, [day], settings, slotMinutes);
         if (slot) place(activity, slot);
       });
     } else {
-      const slot = findBestSlot(activity, schedule, timeSlots, days, settings);
+      const slot = findBestSlot(activity, schedule, timeSlots, days, settings, slotMinutes);
       if (slot) place(activity, slot);
     }
   });

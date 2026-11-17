@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { formatDuration, formatSlotRange, slotMinutesOf } from '../../utils/time';
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -12,6 +13,7 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
     const { darkMode } = useTheme();
     const days = orderedDays(generatedTimetable);
     const slots = timetableData.timeSlots;
+    const slotMinutes = slotMinutesOf(timetableData);
 
     // A multi-hour activity is drawn once, in its first hour, spanning the
     // following rows; the cells it covers are skipped.
@@ -47,7 +49,7 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
                     {slots.map((slot, slotIndex) => (
                         <tr key={slot} className={slotIndex % 2 === 0 ? ('bg-gray-50 dark:bg-gray-800') : ('bg-white dark:bg-gray-700')}>
                             <th scope="row" className="p-4 text-left font-semibold whitespace-nowrap text-gray-700 bg-gray-100 dark:text-gray-300 dark:bg-gray-900">
-                                {slot}
+                                {formatSlotRange(slot, slotMinutes)}
                             </th>
                             {days.map(day => {
                                 const { entry, span, covered } = cellInfo(day, slotIndex);
@@ -68,7 +70,7 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
                                                 </div>
                                                 {span > 1 && (
                                                     <div className="text-xs mt-1 text-gray-700 dark:text-gray-200">
-                                                        ⏱️ {span} hours
+                                                        ⏱️ {formatDuration(span * slotMinutes)}
                                                     </div>
                                                 )}
                                                 {entry.instructor && (
