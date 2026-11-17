@@ -124,10 +124,10 @@ const ActivityForm = () => {
                                         onClick={() => setCurrentActivity(prev => ({ ...prev, priority }))}
                                         className={`flex-1 py-2 px-3 rounded-lg font-medium transition-all duration-200 ${currentActivity.priority === priority
                                             ? priority === 'high'
-                                                ? 'bg-red-500 text-white'
+                                                ? 'bg-red-600 text-white'
                                                 : priority === 'medium'
                                                     ? 'bg-amber-400 text-gray-900'
-                                                    : 'bg-green-500 text-white'
+                                                    : 'bg-green-700 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500'
                                             }`}
                                     >
@@ -302,10 +302,10 @@ const ActivityForm = () => {
                                                     {activity.name}
                                                 </h4>
                                                 <span className={`ml-3 px-2 py-1 rounded text-xs font-semibold ${activity.priority === 'high'
-                                                    ? 'bg-red-500 text-white'
+                                                    ? 'bg-red-600 text-white'
                                                     : activity.priority === 'medium'
                                                         ? 'bg-amber-400 text-gray-900'
-                                                        : 'bg-green-500 text-white'
+                                                        : 'bg-green-700 text-white'
                                                     }`}>
                                                     {activity.priority.toUpperCase()}
                                                 </span>
