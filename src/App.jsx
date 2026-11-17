@@ -51,6 +51,29 @@ const EMPTY_TIMETABLE = {
   constraints: []
 };
 
+// localStorage can be unavailable (private mode, blocked storage), so every
+// access is wrapped and failures fall back to defaults.
+const storage = {
+  get(key) {
+    try { return localStorage.getItem(key); } catch { return null; }
+  },
+  set(key, value) {
+    try { localStorage.setItem(key, value); } catch { /* storage unavailable */ }
+  },
+  remove(key) {
+    try { localStorage.removeItem(key); } catch { /* storage unavailable */ }
+  }
+};
+
+const DARK_MODE_KEY = 'tt-dark-mode';
+const draftKey = (uid) => `tt-draft-${uid}`;
+
+const initialDarkMode = () => {
+  const saved = storage.get(DARK_MODE_KEY);
+  if (saved !== null) return saved === 'true';
+  return Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+};
+
 const fallbackName = (user) =>
   user.displayName || (user.email ? user.email.split('@')[0] : 'User');
 
@@ -90,7 +113,7 @@ const IntegratedTimetableApp = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(initialDarkMode);
   // authLoading: initial session check (shows full-screen loader).
   // authSubmitting: a form action is in flight (keeps the auth page mounted).
   const [authLoading, setAuthLoading] = useState(true);
@@ -190,6 +213,7 @@ const IntegratedTimetableApp = () => {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    storage.set(DARK_MODE_KEY, String(darkMode));
   }, [darkMode]);
 
   useEffect(() => {
@@ -314,6 +338,8 @@ const IntegratedTimetableApp = () => {
 
   const handleLogout = async () => {
     try {
+      // Drop this user's in-progress draft so it isn't left on a shared device.
+      if (currentUser) storage.remove(draftKey(currentUser.uid));
       await signOut(auth);
       setIsAuthenticated(false);
       setCurrentUser(null);
@@ -513,6 +539,51 @@ const IntegratedTimetableApp = () => {
       setSavedStatus('error');
     }
   }, [currentUid]);
+
+  // Restore the signed-in user's in-progress timetable after a reload, then keep
+  // saving it as they work. `draftUid` marks whose draft has been restored, so
+  // the empty initial state never overwrites a saved draft.
+  const [draftUid, setDraftUid] = useState(null);
+
+  useEffect(() => {
+    if (!currentUid) {
+      setDraftUid(null);
+      return;
+    }
+    try {
+      const draft = JSON.parse(storage.get(draftKey(currentUid)) || 'null');
+      if (draft && draft.timetableData) {
+        const data = { ...EMPTY_TIMETABLE, ...draft.timetableData };
+        const generated = draft.generatedTimetable || null;
+        setTimetableType(draft.timetableType || '');
+        setTimetableData(data);
+        setCurrentActivity({ ...EMPTY_ACTIVITY, ...draft.currentActivity });
+        setGeneratedTimetable(generated);
+        setConflicts(generated ? detectConflicts(generated, data.activities, data.timeSlots) : []);
+        setCurrentTimetableId(draft.currentTimetableId || null);
+        if (draft.optimizationSettings) setOptimizationSettings(draft.optimizationSettings);
+        const step = Number(draft.currentStep) || 1;
+        setCurrentStep(step === 4 && !generated ? 3 : Math.min(Math.max(step, 1), 4));
+      }
+    } catch (error) {
+      console.error('Could not restore draft:', error);
+    }
+    setDraftUid(currentUid);
+  }, [currentUid]);
+
+  useEffect(() => {
+    if (!draftUid || draftUid !== currentUid) return;
+    storage.set(draftKey(draftUid), JSON.stringify({
+      currentStep,
+      timetableType,
+      timetableData,
+      currentActivity,
+      generatedTimetable,
+      currentTimetableId,
+      optimizationSettings
+    }));
+  }, [draftUid, currentUid, currentStep, timetableType, timetableData, currentActivity,
+    generatedTimetable, currentTimetableId, optimizationSettings]);
 
   // Fetch saved timetables when the signed-in user changes
   useEffect(() => {
