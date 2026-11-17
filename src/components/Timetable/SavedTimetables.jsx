@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTimetable } from '../../context/TimetableContext';
 import { Calendar, Download, Trash2, Clock, User, Printer, RefreshCw, AlertCircle } from 'lucide-react';
+import Button from '../ui/Button';
 
 const SavedTimetables = ({ openTimetable, printTimetable }) => {
     const { savedTimetables, savedStatus, refreshSavedTimetables, deleteTimetable } = useTimetable();
@@ -51,14 +52,13 @@ const SavedTimetables = ({ openTimetable, printTimetable }) => {
                 <p className="mb-6 text-gray-600 dark:text-gray-400">
                     Check your internet connection and try again.
                 </p>
-                <button
-                    type="button"
+                <Button
+                    size="sm"
                     onClick={refreshSavedTimetables}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:shadow-lg"
                 >
                     <RefreshCw className="w-4 h-4" aria-hidden="true" />
                     Try again
-                </button>
+                </Button>
             </div>
         );
     }

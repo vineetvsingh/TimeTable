@@ -2,6 +2,8 @@ import React from 'react';
 import { Info } from 'lucide-react';
 import { TIME_SLOTS } from '../../constants';
 import { useTimetable } from '../../context/TimetableContext';
+import Button from '../ui/Button';
+import { inputClass } from '../ui/styles';
 
 const Configuration = () => {
     const {
@@ -27,7 +29,7 @@ const Configuration = () => {
                     <input
                         id="timetable-name"
                         type="text"
-                        className="w-full p-4 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                        className={`${inputClass} p-4`}
                         placeholder="Enter a memorable name for your timetable..."
                         value={timetableData.name}
                         onChange={(e) => setTimetableData(prev => ({ ...prev, name: e.target.value }))}
@@ -117,24 +119,18 @@ const Configuration = () => {
                 </div>
 
                 <div className="flex flex-wrap justify-between gap-3">
-                    <button
-                        type="button"
+                    <Button
+                        variant="secondary"
                         onClick={() => setCurrentStep(1)}
-                        className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                     >
                         ← Back
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
                         onClick={() => setCurrentStep(3)}
                         disabled={!timetableData.name || timetableData.timeSlots.length === 0}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${!timetableData.name || timetableData.timeSlots.length === 0
-                            ? 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
-                            : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                            }`}
                     >
                         Next →
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

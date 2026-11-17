@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Sparkles, LogIn, UserPlus, User, Mail, Lock, Eye, EyeOff, Sun, Moon, ArrowLeft, Send } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import Button from '../ui/Button';
+import { inputClass } from '../ui/styles';
 
 const AuthPage = ({
     isLogin,
@@ -111,7 +113,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.name ? 'auth-name-error' : undefined}
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.name ? 'border-red-500' : ''
+                                            className={`${inputClass} pl-10 pr-4 py-3 ${authErrors.name ? 'border-red-500' : ''
                                                 }`}
                                             placeholder="Enter your full name"
                                         />
@@ -135,7 +137,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.email ? 'auth-email-error' : undefined}
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.email ? 'border-red-500' : ''
+                                        className={`${inputClass} pl-10 pr-4 py-3 ${authErrors.email ? 'border-red-500' : ''
                                             }`}
                                         placeholder="Enter your email"
                                     />
@@ -158,7 +160,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.password ? 'auth-password-error' : undefined}
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        className={`w-full pl-10 pr-12 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.password ? 'border-red-500' : ''
+                                        className={`${inputClass} pl-10 pr-12 py-3 ${authErrors.password ? 'border-red-500' : ''
                                             }`}
                                         placeholder="Enter your password"
                                     />
@@ -190,7 +192,7 @@ const AuthPage = ({
                                         aria-describedby={authErrors.confirmPassword ? 'auth-confirmPassword-error' : undefined}
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
-                                            className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.confirmPassword ? 'border-red-500' : ''
+                                            className={`${inputClass} pl-10 pr-4 py-3 ${authErrors.confirmPassword ? 'border-red-500' : ''
                                                 }`}
                                             placeholder="Confirm your password"
                                         />
@@ -199,13 +201,14 @@ const AuthPage = ({
                                 </div>
                             )}
 
-                            <button
+                            <Button
                                 type="submit"
+                                fullWidth
+                                className="mt-6"
                                 disabled={authLoading}
-                                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {authLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
-                            </button>
+                            </Button>
 
                             <div className="relative my-6">
                                 <div className="absolute inset-0 flex items-center">
@@ -273,7 +276,7 @@ const AuthPage = ({
                                     autoComplete="email"
                                     value={resetEmail}
                                     onChange={(e) => setResetEmail(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20"
+                                    className={`${inputClass} pl-10 pr-4 py-3`}
                                     placeholder="Enter your email"
                                     required
                                 />
@@ -283,10 +286,11 @@ const AuthPage = ({
                             </p>
                         </div>
 
-                        <button
+                        <Button
                             type="submit"
+                            fullWidth
+                            className="mt-6"
                             disabled={authLoading}
-                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 mt-6 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {authLoading ? 'Sending...' : (
                                 <>
@@ -294,7 +298,7 @@ const AuthPage = ({
                                     Send Reset Link
                                 </>
                             )}
-                        </button>
+                        </Button>
 
                         <button
                             type="button"

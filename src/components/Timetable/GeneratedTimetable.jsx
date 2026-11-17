@@ -5,6 +5,7 @@ import TimetableGrid from './TimetableGrid';
 import StatsDashboard from './StatsDashboard';
 import AlgorithmInfo from './AlgorithmInfo';
 import { useTimetable } from '../../context/TimetableContext';
+import Button from '../ui/Button';
 
 const GeneratedTimetable = () => {
     const {
@@ -112,12 +113,12 @@ const GeneratedTimetable = () => {
             </div>
 
             <div className="mt-8 flex flex-wrap justify-between gap-3 print:hidden">
-                <button
+                <Button
+                    variant="secondary"
                     onClick={resetGenerator}
-                    className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                 >
                     ← Start Over
-                </button>
+                </Button>
                 <button
                     onClick={() => {
                         window.print();

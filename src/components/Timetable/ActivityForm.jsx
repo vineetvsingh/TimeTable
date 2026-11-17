@@ -3,6 +3,8 @@ import { Plus, X, Sparkles, Pencil, Save } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useTimetable } from '../../context/TimetableContext';
 import { PRIORITY_LEVELS, COLORS, DAYS } from '../../constants';
+import Button from '../ui/Button';
+import { compactInputClass } from '../ui/styles';
 
 const ActivityForm = () => {
     const {
@@ -38,7 +40,7 @@ const ActivityForm = () => {
                                 id="activity-name"
                                 value={currentActivity.name}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, name: e.target.value }))}
-                                className="w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500 focus:ring-2 focus:ring-purple-500"
+                                className={compactInputClass}
                                 placeholder="e.g., Mathematics, Meeting"
                             />
                         </div>
@@ -50,7 +52,7 @@ const ActivityForm = () => {
                                 id="activity-duration"
                                 value={currentActivity.duration}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
-                                className="w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500 focus:ring-2 focus:ring-purple-500"
+                                className={compactInputClass}
                             >
                                 {[1, 2, 3, 4].map(num => (
                                     <option key={num} value={num}>{num} hour{num > 1 ? 's' : ''}</option>
@@ -69,7 +71,7 @@ const ActivityForm = () => {
                                 id="activity-instructor"
                                 value={currentActivity.instructor}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, instructor: e.target.value }))}
-                                className="w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500 focus:ring-2 focus:ring-purple-500"
+                                className={compactInputClass}
                                 placeholder="Optional"
                             />
                         </div>
@@ -82,7 +84,7 @@ const ActivityForm = () => {
                                 id="activity-room"
                                 value={currentActivity.room}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, room: e.target.value }))}
-                                className="w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500 focus:ring-2 focus:ring-purple-500"
+                                className={compactInputClass}
                                 placeholder="Optional"
                             />
                         </div>
@@ -96,7 +98,7 @@ const ActivityForm = () => {
                             id="activity-description"
                                 value={currentActivity.description}
                             onChange={(e) => setCurrentActivity(prev => ({ ...prev, description: e.target.value }))}
-                            className="w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 dark:bg-gray-600 dark:text-white dark:border-gray-500 focus:ring-2 focus:ring-purple-500"
+                            className={compactInputClass}
                             rows="2"
                             placeholder="Optional notes about this activity..."
                         />
@@ -246,36 +248,32 @@ const ActivityForm = () => {
                 )}
                 <div className="flex flex-wrap gap-3">
                     <div className="flex-1 min-w-[12rem]">
-                    <button
-                        type="button"
+                    <Button
+                        variant="success"
+                        fullWidth
                         onClick={addActivity}
                         disabled={!currentActivity.name.trim()}
-                        className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
-                            ? 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
-                            : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
-                            }`}
                     >
                         {editingActivityId ? (
                             <>
-                                <Save className="w-5 h-5 inline mr-2" aria-hidden="true" />
+                                <Save className="w-5 h-5" aria-hidden="true" />
                                 Save Changes
                             </>
                         ) : (
                             <>
-                                <Plus className="w-5 h-5 inline mr-2" aria-hidden="true" />
+                                <Plus className="w-5 h-5" aria-hidden="true" />
                                 Add Activity
                             </>
                         )}
-                    </button>
+                    </Button>
                     </div>
                     {editingActivityId && (
-                        <button
-                            type="button"
+                        <Button
+                            variant="secondary"
                             onClick={cancelEditActivity}
-                            className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                         >
                             Cancel
-                        </button>
+                        </Button>
                     )}
                 </div>
 
@@ -345,25 +343,19 @@ const ActivityForm = () => {
                 )}
 
                 <div className="flex flex-wrap justify-between gap-3">
-                    <button
-                        type="button"
+                    <Button
+                        variant="secondary"
                         onClick={() => setCurrentStep(2)}
-                        className="px-6 py-3 rounded-lg font-semibold transition-all duration-200 bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                     >
                         ← Back
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
                         onClick={generateTimetable}
                         disabled={timetableData.activities.length === 0}
-                        className={`px-5 sm:px-8 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${timetableData.activities.length === 0
-                            ? 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
-                            : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                            }`}
                     >
-                        <Sparkles className="w-5 h-5 inline mr-2" />
+                        <Sparkles className="w-5 h-5" aria-hidden="true" />
                         Generate Smart Timetable
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
