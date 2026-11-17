@@ -4,13 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA5My9rrC8WdXurddCOug6-rMOKiPw7F_U",
-  authDomain: "time-table-generator-5c5a2.firebaseapp.com",
-  projectId: "time-table-generator-5c5a2",
-  storageBucket: "time-table-generator-5c5a2.firebasestorage.app",
-  messagingSenderId: "1013597823425",
-  appId: "1:1013597823425:web:5b348ad798e53cf17f8f40",
-  measurementId: "G-GGM02HT77X"
+  apiKey: "AIzaSyBNB8q9w7qRIVcfV4VegZCm6zZg-lwDCJI",
+  authDomain: "timetable-d00d1.firebaseapp.com",
+  projectId: "timetable-d00d1",
+  storageBucket: "timetable-d00d1.firebasestorage.app",
+  messagingSenderId: "838806829080",
+  appId: "1:838806829080:web:94acf6f5472c4b2f3fab6d",
+  measurementId: "G-7KJW120LK2"
 };
 
 const app = initializeApp(firebaseConfig);
