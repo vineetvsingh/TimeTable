@@ -47,7 +47,7 @@ const Configuration = ({
                                 key={slot}
                                 aria-pressed={timetableData.timeSlots.includes(slot)}
                                 onClick={() => (timetableData.timeSlots.includes(slot) ? removeTimeSlot(slot) : addTimeSlot(slot))}
-                                className={`p-2 text-sm rounded-lg transition-all duration-200 transform hover:scale-105 ${timetableData.timeSlots.includes(slot)
+                                className={`p-2 text-sm rounded-lg transition-all duration-200 ${timetableData.timeSlots.includes(slot)
                                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
                                     : darkMode
                                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
@@ -71,7 +71,7 @@ const Configuration = ({
                                         key={slot}
                                         onClick={() => removeTimeSlot(slot)}
                                         aria-label={`Remove ${slot}`}
-                                        className={`px-3 py-1 rounded-full text-sm cursor-pointer transition-all duration-200 transform hover:scale-105 ${darkMode
+                                        className={`px-3 py-1 rounded-full text-sm cursor-pointer transition-all duration-200 ${darkMode
                                             ? 'bg-purple-600 text-white hover:bg-red-600'
                                             : 'bg-blue-100 text-blue-800 hover:bg-red-100 hover:text-red-800'
                                             }`}
@@ -127,7 +127,7 @@ const Configuration = ({
                     <button
                         type="button"
                         onClick={() => setCurrentStep(1)}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${darkMode
                             ? 'bg-gray-700 text-white hover:bg-gray-600'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
@@ -138,7 +138,7 @@ const Configuration = ({
                         type="button"
                         onClick={() => setCurrentStep(3)}
                         disabled={!timetableData.name || timetableData.timeSlots.length === 0}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${!timetableData.name || timetableData.timeSlots.length === 0
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${!timetableData.name || timetableData.timeSlots.length === 0
                             ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
                             : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
                             }`}

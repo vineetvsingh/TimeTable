@@ -262,7 +262,7 @@ const ActivityForm = ({
                     type="button"
                     onClick={addActivity}
                     disabled={!currentActivity.name.trim()}
-                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
+                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
                         ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
                         : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
                         }`}
@@ -328,7 +328,7 @@ const ActivityForm = ({
                     <button
                         type="button"
                         onClick={() => setCurrentStep(2)}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${darkMode
                             ? 'bg-gray-700 text-white hover:bg-gray-600'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
@@ -339,9 +339,9 @@ const ActivityForm = ({
                         type="button"
                         onClick={generateTimetable}
                         disabled={timetableData.activities.length === 0}
-                        className={`px-5 sm:px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${timetableData.activities.length === 0
+                        className={`px-5 sm:px-8 py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${timetableData.activities.length === 0
                             ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
-                            : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg animate-pulse'
+                            : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
                             }`}
                     >
                         <Sparkles className="w-5 h-5 inline mr-2" />

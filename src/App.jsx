@@ -125,7 +125,6 @@ const IntegratedTimetableApp = () => {
     confirmPassword: ''
   });
   const [authErrors, setAuthErrors] = useState({});
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   // Timetable Generator State
   const [currentStep, setCurrentStep] = useState(1);
@@ -201,11 +200,6 @@ const IntegratedTimetableApp = () => {
     { name: 'orange', light: 'bg-orange-200', dark: 'bg-orange-700', border: 'border-orange-400' }
   ];
 
-  const flashSuccess = (ms) => {
-    setShowSuccessAnimation(true);
-    setTimeout(() => setShowSuccessAnimation(false), ms);
-  };
-
   // Effects
   useEffect(() => {
     if (darkMode) {
@@ -278,7 +272,6 @@ const IntegratedTimetableApp = () => {
       }
       setIsAuthenticated(true);
       setFormData(prev => ({ ...prev, password: '', confirmPassword: '' }));
-      flashSuccess(1000);
     } catch (error) {
       console.error('Auth error:', error);
       setAuthErrors({ email: authErrorMessage(error.code) });
@@ -310,7 +303,6 @@ const IntegratedTimetableApp = () => {
 
       setCurrentUser({ uid: user.uid, email: user.email, name });
       setIsAuthenticated(true);
-      flashSuccess(1000);
     } catch (error) {
       // The user closing the popup is not an error worth reporting.
       if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') return;
@@ -385,7 +377,6 @@ const IntegratedTimetableApp = () => {
   const handleTypeSelection = (type) => {
     setTimetableType(type);
     setCurrentStep(2);
-    flashSuccess(500);
   };
 
   const addTimeSlot = (slot) => {
@@ -463,7 +454,6 @@ const IntegratedTimetableApp = () => {
     setGeneratedTimetable(generated);
     setConflicts(detectConflicts(generated, timetableData.activities, timetableData.timeSlots));
     setCurrentStep(4);
-    flashSuccess(1000);
   };
 
   const regenerateTimetable = () => {
@@ -482,7 +472,7 @@ const IntegratedTimetableApp = () => {
 
   const getConflictIcon = (day, slot) => {
     const hasConflict = conflicts.some(conflict => conflict.day === day && conflict.time === slot);
-    return hasConflict ? <AlertCircle className="w-4 h-4 text-red-500 ml-1 animate-pulse" /> : null;
+    return hasConflict ? <AlertCircle className="w-4 h-4 text-red-500 ml-1" /> : null;
   };
 
   const exportTimetable = () => {
@@ -693,7 +683,6 @@ const IntegratedTimetableApp = () => {
         setDarkMode={setDarkMode}
         showPassword={showPassword}
         setShowPassword={setShowPassword}
-        showSuccessAnimation={showSuccessAnimation}
         handlePasswordReset={handlePasswordReset}
       />
     );
@@ -704,7 +693,6 @@ const IntegratedTimetableApp = () => {
       <TimetableGenerator
         currentStep={currentStep}
         setCurrentStep={setCurrentStep}
-        showSuccessAnimation={showSuccessAnimation}
         timetableData={timetableData}
         setTimetableData={setTimetableData}
         currentActivity={currentActivity}

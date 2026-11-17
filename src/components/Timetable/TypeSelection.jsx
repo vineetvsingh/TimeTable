@@ -12,7 +12,7 @@ const TypeSelection = ({ timetableTypes, handleTypeSelection, darkMode }) => {
                         type="button"
                         key={type.id}
                         onClick={() => handleTypeSelection(type.id)}
-                        className={`relative overflow-hidden rounded-xl p-6 text-left w-full cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${darkMode
+                        className={`relative overflow-hidden rounded-xl p-6 text-left w-full cursor-pointer transition-all duration-300 hover:shadow-2xl ${darkMode
                             ? 'bg-gray-700 hover:bg-gray-600 border border-gray-600'
                             : 'bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-blue-500'
                             }`}

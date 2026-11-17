@@ -10,7 +10,6 @@ import SavedTimetables from './SavedTimetables';
 const TimetableGenerator = ({
     currentStep,
     setCurrentStep,
-    showSuccessAnimation,
     timetableData,
     setTimetableData,
     currentActivity,
@@ -62,7 +61,7 @@ const TimetableGenerator = ({
         return () => clearTimeout(timer);
     }, [printPending, view, currentStep, generatedTimetable]);
 
-    const iconButton = 'p-2 sm:p-3 rounded-full transition-all duration-300 transform hover:scale-110';
+    const iconButton = 'p-2 sm:p-3 rounded-full transition-all duration-300';
 
     return (
         <div className={`min-h-screen transition-all duration-500 ${darkMode
@@ -101,14 +100,14 @@ const TimetableGenerator = ({
                 {/* Header */}
                 <div className="text-center mb-8 pt-6 print:hidden">
                     <div className="flex items-center justify-center mb-4">
-                        <Sparkles className={`hidden sm:block w-8 h-8 mr-2 shrink-0 ${darkMode ? 'text-purple-400' : 'text-purple-600'} animate-pulse`} />
+                        <Sparkles className={`hidden sm:block w-8 h-8 mr-2 shrink-0 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
                         <h1 className={`text-3xl sm:text-5xl font-bold bg-gradient-to-r ${darkMode
                             ? 'from-blue-400 via-purple-400 to-pink-400'
                             : 'from-blue-600 via-purple-600 to-pink-600'
                             } bg-clip-text text-transparent animate-gradient`}>
                             Smart Timetable Generator
                         </h1>
-                        <Sparkles className={`hidden sm:block w-8 h-8 ml-2 shrink-0 ${darkMode ? 'text-purple-400' : 'text-purple-600'} animate-pulse`} />
+                        <Sparkles className={`hidden sm:block w-8 h-8 ml-2 shrink-0 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
                     </div>
                     <p className={`${darkMode ? 'text-gray-300' : 'text-gray-600'} text-base sm:text-lg`}>
                         Intelligent scheduling with conflict detection and optimization
@@ -173,7 +172,7 @@ const TimetableGenerator = ({
                         <div className={`rounded-2xl shadow-2xl p-4 sm:p-8 mt-12 transition-all duration-300 print:shadow-none print:p-0 print:mt-0 ${darkMode
                             ? 'bg-gray-800/90 backdrop-blur-lg border border-gray-700'
                             : 'bg-white/90 backdrop-blur-lg'
-                            } ${showSuccessAnimation ? 'transform scale-105' : ''}`}>
+                            }`}>
 
                             {currentStep === 1 && (
                                 <TypeSelection

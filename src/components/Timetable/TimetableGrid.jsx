@@ -25,7 +25,7 @@ const TimetableGrid = ({ generatedTimetable, timetableData, darkMode, getConflic
                             {Object.keys(generatedTimetable).map(day => (
                                 <td key={day} className="p-2">
                                     {generatedTimetable[day][slot] ? (
-                                        <div className={`p-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-xl hover:scale-105 ${darkMode ? generatedTimetable[day][slot].colorDark : generatedTimetable[day][slot].colorLight
+                                        <div className={`p-3 rounded-lg shadow-md transition-all duration-200 hover:shadow-xl ${darkMode ? generatedTimetable[day][slot].colorDark : generatedTimetable[day][slot].colorLight
                                             } ${generatedTimetable[day][slot].borderColor} border-l-4`}>
                                             <div className="flex items-center justify-between">
                                                 <span className={`font-semibold text-sm ${darkMode ? 'text-white' : 'text-gray-800'}`}>

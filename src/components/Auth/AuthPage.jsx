@@ -14,7 +14,6 @@ const AuthPage = ({
     setDarkMode,
     showPassword,
     setShowPassword,
-    showSuccessAnimation,
     handlePasswordReset
 }) => {
     const [isResettingPassword, setIsResettingPassword] = useState(false);
@@ -40,7 +39,7 @@ const AuthPage = ({
                     type="button"
                     onClick={() => setDarkMode(!darkMode)}
                     aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                    className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${darkMode
+                    className={`p-3 rounded-full transition-all duration-300 ${darkMode
                         ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 shadow-lg shadow-yellow-400/20'
                         : 'bg-white text-gray-800 hover:bg-gray-100 shadow-lg shadow-gray-400/20'
                         }`}
@@ -52,12 +51,12 @@ const AuthPage = ({
             <div className={`w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl transition-all duration-300 ${darkMode
                 ? 'bg-gray-800/90 backdrop-blur-lg border border-gray-700'
                 : 'bg-white/90 backdrop-blur-lg'
-                } ${showSuccessAnimation ? 'transform scale-105' : ''}`}>
+                }`}>
 
                 {/* Header */}
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center mb-4">
-                        <Sparkles className={`w-8 h-8 ${darkMode ? 'text-purple-400' : 'text-purple-600'} animate-pulse`} />
+                        <Sparkles className={`w-8 h-8 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
                         <h1 className={`text-3xl font-bold ml-2 bg-gradient-to-r ${darkMode
                             ? 'from-blue-400 via-purple-400 to-pink-400'
                             : 'from-blue-600 via-purple-600 to-pink-600'
@@ -232,7 +231,7 @@ const AuthPage = ({
                             <button
                                 type="submit"
                                 disabled={authLoading}
-                                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {authLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
                             </button>
@@ -252,7 +251,7 @@ const AuthPage = ({
                                 type="button"
                                 onClick={handleGoogleLogin}
                                 disabled={authLoading}
-                                className={`w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 border-2 ${darkMode
+                                className={`w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 border-2 ${darkMode
                                     ? 'bg-white text-gray-800 border-white hover:bg-gray-100'
                                     : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50'
                                     } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -323,7 +322,7 @@ const AuthPage = ({
                         <button
                             type="submit"
                             disabled={authLoading}
-                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105 mt-6 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-200 mt-6 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {authLoading ? 'Sending...' : (
                                 <>

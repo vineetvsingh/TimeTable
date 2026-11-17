@@ -33,12 +33,12 @@ const GeneratedTimetable = ({
                     </h2>
                     <div className="flex items-center mt-2">
                         {conflicts.length === 0 ? (
-                            <div className="flex items-center text-green-500 animate-pulse">
+                            <div className="flex items-center text-green-500">
                                 <CheckCircle className="w-5 h-5 mr-2" />
                                 <span className="font-semibold">Perfect! No conflicts detected</span>
                             </div>
                         ) : (
-                            <div className="flex items-center text-red-500 animate-pulse">
+                            <div className="flex items-center text-red-500">
                                 <AlertCircle className="w-5 h-5 mr-2" />
                                 <span className="font-semibold">{conflicts.length} conflict(s) detected</span>
                             </div>
@@ -48,7 +48,7 @@ const GeneratedTimetable = ({
                 <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
                     <button
                         onClick={regenerateTimetable}
-                        className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                        className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
                     >
                         <RefreshCw className="w-4 h-4 inline mr-2" />
                         Regenerate
@@ -56,21 +56,21 @@ const GeneratedTimetable = ({
                     <button
                         onClick={saveTimetable}
                         disabled={isSaving}
-                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         <Cloud className="w-4 h-4 inline mr-2" />
                         {isSaving ? 'Saving...' : isSavedTimetable ? 'Update Saved' : 'Save to Cloud'}
                     </button>
                     <button
                         onClick={exportTimetable}
-                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
                     >
                         <Download className="w-4 h-4 inline mr-2" />
                         Export
                     </button>
                     <button
                         onClick={() => setCurrentStep(3)}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
                     >
                         <Edit3 className="w-4 h-4 inline mr-2" />
                         Edit
@@ -116,7 +116,7 @@ const GeneratedTimetable = ({
             <div className="mt-8 flex flex-wrap justify-between gap-3 print:hidden">
                 <button
                     onClick={resetGenerator}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${darkMode
                         ? 'bg-gray-700 text-white hover:bg-gray-600'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
@@ -127,7 +127,7 @@ const GeneratedTimetable = ({
                     onClick={() => {
                         window.print();
                     }}
-                    className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                    className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
                 >
                     <Save className="w-5 h-5 inline mr-2" />
                     Print/Save PDF
