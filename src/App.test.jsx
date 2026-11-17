@@ -153,7 +153,7 @@ describe('App', () => {
 
       expect(clicked).toEqual(['My Week.csv', 'My Week.ics']);
       const [csv, ics] = await Promise.all(files.map((file) => file.text()));
-      expect(csv).toContain('Time,Monday,Tuesday,Wednesday,Thursday,Friday');
+      expect(csv).toContain('Time,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday');
       expect(csv).toContain('Maths');
       expect(ics.match(/BEGIN:VEVENT/g).length).toBeGreaterThan(0);
       expect(ics).toContain('SUMMARY:Maths');

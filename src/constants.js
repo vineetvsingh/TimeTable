@@ -26,7 +26,7 @@ export const TIMETABLE_TYPES = [
     id: 'work',
     name: 'Work',
     icon: Clock,
-    description: 'Shifts and meetings, Monday to Saturday',
+    description: 'Shifts and meetings across the working week',
     tone: 'bg-orange-100 text-orange-700 dark:bg-orange-400/15 dark:text-orange-300'
   }
 ];
@@ -37,11 +37,12 @@ export const SLOT_LENGTHS = [30, 45, 50, 60, 90];
 
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-// Which days each timetable type schedules on.
+// Which days each timetable type schedules on (as in India: schools run
+// Monday to Saturday; colleges and offices Monday to Friday).
 export const WORKING_DAYS = {
-  school: DAYS.slice(0, 5),
+  school: DAYS.slice(0, 6),
   college: DAYS.slice(0, 5),
-  work: DAYS.slice(0, 6),
+  work: DAYS.slice(0, 5),
   personal: DAYS
 };
 
