@@ -15,7 +15,7 @@ const ConflictsPanel = ({ conflicts, darkMode }) => {
                     <div key={index} className={`text-sm p-3 rounded-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
                         <span className={`inline-block px-2 py-1 rounded text-xs font-bold mr-2 ${conflict.severity === 'high'
                             ? 'bg-red-500 text-white'
-                            : 'bg-yellow-500 text-white'
+                            : 'bg-amber-400 text-gray-900'
                             }`}>
                             {conflict.severity.toUpperCase()}
                         </span>

@@ -37,7 +37,9 @@ const AuthPage = ({
             {/* Dark Mode Toggle */}
             <div className="absolute top-4 right-4 z-50">
                 <button
+                    type="button"
                     onClick={() => setDarkMode(!darkMode)}
+                    aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
                     className={`p-3 rounded-full transition-all duration-300 transform hover:scale-110 ${darkMode
                         ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700 shadow-lg shadow-yellow-400/20'
                         : 'bg-white text-gray-800 hover:bg-gray-100 shadow-lg shadow-gray-400/20'
@@ -75,6 +77,8 @@ const AuthPage = ({
                         {/* Toggle Buttons */}
                         <div className={`flex rounded-lg p-1 mb-6 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
                             <button
+                                type="button"
+                                aria-pressed={isLogin}
                                 onClick={() => {
                                     setIsLogin(true);
                                 }}
@@ -87,6 +91,8 @@ const AuthPage = ({
                                 Login
                             </button>
                             <button
+                                type="button"
+                                aria-pressed={!isLogin}
                                 onClick={() => {
                                     setIsLogin(false);
                                 }}
@@ -104,105 +110,122 @@ const AuthPage = ({
                         <form onSubmit={handleAuthSubmit} className="space-y-4">
                             {!isLogin && (
                                 <div>
-                                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    <label htmlFor="auth-name" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                         Full Name
                                     </label>
                                     <div className="relative">
-                                        <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                                        <User aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
                                             }`} />
                                         <input
                                             type="text"
-                                            name="name"
+                                            id="auth-name"
+                                        name="name"
+                                        autoComplete="name"
+                                        aria-invalid={Boolean(authErrors.name)}
+                                        aria-describedby={authErrors.name ? 'auth-name-error' : undefined}
                                             value={formData.name}
                                             onChange={handleInputChange}
                                             className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
                                                 ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
                                                 : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                                } focus:ring-4 focus:ring-opacity-20 focus:ring-blue-500 ${authErrors.name ? 'border-red-500' : ''
+                                                } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.name ? 'border-red-500' : ''
                                                 }`}
                                             placeholder="Enter your full name"
                                         />
                                     </div>
-                                    {authErrors.name && <p className="text-red-500 text-sm mt-1">{authErrors.name}</p>}
+                                    {authErrors.name && <p id="auth-name-error" className="text-red-500 text-sm mt-1">{authErrors.name}</p>}
                                 </div>
                             )}
 
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                <label htmlFor="auth-email" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Email Address
                                 </label>
                                 <div className="relative">
-                                    <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                                    <Mail aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
                                         }`} />
                                     <input
                                         type="email"
+                                        id="auth-email"
                                         name="email"
+                                        autoComplete="email"
+                                        aria-invalid={Boolean(authErrors.email)}
+                                        aria-describedby={authErrors.email ? 'auth-email-error' : undefined}
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
                                             ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
                                             : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                            } focus:ring-4 focus:ring-opacity-20 focus:ring-blue-500 ${authErrors.email ? 'border-red-500' : ''
+                                            } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.email ? 'border-red-500' : ''
                                             }`}
                                         placeholder="Enter your email"
                                     />
                                 </div>
-                                {authErrors.email && <p className="text-red-500 text-sm mt-1">{authErrors.email}</p>}
+                                {authErrors.email && <p id="auth-email-error" className="text-red-500 text-sm mt-1">{authErrors.email}</p>}
                             </div>
 
                             <div>
-                                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                <label htmlFor="auth-password" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Password
                                 </label>
                                 <div className="relative">
-                                    <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                                    <Lock aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
                                         }`} />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
+                                        id="auth-password"
                                         name="password"
+                                        autoComplete={isLogin ? 'current-password' : 'new-password'}
+                                        aria-invalid={Boolean(authErrors.password)}
+                                        aria-describedby={authErrors.password ? 'auth-password-error' : undefined}
                                         value={formData.password}
                                         onChange={handleInputChange}
                                         className={`w-full pl-10 pr-12 py-3 rounded-lg transition-all duration-200 ${darkMode
                                             ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
                                             : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                            } focus:ring-4 focus:ring-opacity-20 focus:ring-blue-500 ${authErrors.password ? 'border-red-500' : ''
+                                            } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.password ? 'border-red-500' : ''
                                             }`}
                                         placeholder="Enter your password"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
+                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
                                         className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
                                             }`}
                                     >
                                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                     </button>
                                 </div>
-                                {authErrors.password && <p className="text-red-500 text-sm mt-1">{authErrors.password}</p>}
+                                {authErrors.password && <p id="auth-password-error" className="text-red-500 text-sm mt-1">{authErrors.password}</p>}
                             </div>
 
                             {!isLogin && (
                                 <div>
-                                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    <label htmlFor="auth-confirmPassword" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                         Confirm Password
                                     </label>
                                     <div className="relative">
-                                        <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                                        <Lock aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
                                             }`} />
                                         <input
                                             type={showPassword ? 'text' : 'password'}
-                                            name="confirmPassword"
+                                            id="auth-confirmPassword"
+                                        name="confirmPassword"
+                                        autoComplete="new-password"
+                                        aria-invalid={Boolean(authErrors.confirmPassword)}
+                                        aria-describedby={authErrors.confirmPassword ? 'auth-confirmPassword-error' : undefined}
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
                                             className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
                                                 ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
                                                 : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                                } focus:ring-4 focus:ring-opacity-20 focus:ring-blue-500 ${authErrors.confirmPassword ? 'border-red-500' : ''
+                                                } focus:outline-none focus:ring-4 focus:ring-blue-500/20 ${authErrors.confirmPassword ? 'border-red-500' : ''
                                                 }`}
                                             placeholder="Confirm your password"
                                         />
                                     </div>
-                                    {authErrors.confirmPassword && <p className="text-red-500 text-sm mt-1">{authErrors.confirmPassword}</p>}
+                                    {authErrors.confirmPassword && <p id="auth-confirmPassword-error" className="text-red-500 text-sm mt-1">{authErrors.confirmPassword}</p>}
                                 </div>
                             )}
 
@@ -254,12 +277,13 @@ const AuthPage = ({
                                 </svg>
                                 Google
                             </button>
-                            {authErrors.google && <p className="text-red-500 text-sm text-center">{authErrors.google}</p>}
+                            {authErrors.google && <p role="alert" className="text-red-500 text-sm text-center">{authErrors.google}</p>}
                         </form>
 
                         {isLogin && (
                             <div className="mt-4 text-center">
                                 <button
+                                    type="button"
                                     onClick={() => setIsResettingPassword(true)}
                                     className={`text-sm ${darkMode ? 'text-purple-400 hover:text-purple-300' : 'text-blue-600 hover:text-blue-700'}`}
                                 >
@@ -271,20 +295,22 @@ const AuthPage = ({
                 ) : (
                     <form onSubmit={onResetSubmit} className="space-y-4">
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <label htmlFor="reset-email" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Email Address
                             </label>
                             <div className="relative">
-                                <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
+                                <Mail aria-hidden="true" className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'
                                     }`} />
                                 <input
+                                    id="reset-email"
                                     type="email"
+                                    autoComplete="email"
                                     value={resetEmail}
                                     onChange={(e) => setResetEmail(e.target.value)}
                                     className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all duration-200 ${darkMode
                                         ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
                                         : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                                        } focus:ring-4 focus:ring-opacity-20 focus:ring-blue-500`}
+                                        } focus:outline-none focus:ring-4 focus:ring-blue-500/20`}
                                     placeholder="Enter your email"
                                     required
                                 />

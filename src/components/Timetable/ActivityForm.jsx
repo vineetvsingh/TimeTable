@@ -26,11 +26,12 @@ const ActivityForm = ({
                 <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <label htmlFor="activity-name" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Activity Name *
                             </label>
                             <input
                                 type="text"
+                                id="activity-name"
                                 value={currentActivity.name}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, name: e.target.value }))}
                                 className={`w-full p-3 rounded-lg ${darkMode
@@ -41,10 +42,11 @@ const ActivityForm = ({
                             />
                         </div>
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <label htmlFor="activity-duration" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Duration (hours)
                             </label>
                             <select
+                                id="activity-duration"
                                 value={currentActivity.duration}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, duration: parseInt(e.target.value) }))}
                                 className={`w-full p-3 rounded-lg ${darkMode
@@ -61,11 +63,12 @@ const ActivityForm = ({
 
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <label htmlFor="activity-instructor" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Instructor/Person
                             </label>
                             <input
                                 type="text"
+                                id="activity-instructor"
                                 value={currentActivity.instructor}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, instructor: e.target.value }))}
                                 className={`w-full p-3 rounded-lg ${darkMode
@@ -76,11 +79,12 @@ const ActivityForm = ({
                             />
                         </div>
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <label htmlFor="activity-room" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Room/Location
                             </label>
                             <input
                                 type="text"
+                                id="activity-room"
                                 value={currentActivity.room}
                                 onChange={(e) => setCurrentActivity(prev => ({ ...prev, room: e.target.value }))}
                                 className={`w-full p-3 rounded-lg ${darkMode
@@ -93,11 +97,12 @@ const ActivityForm = ({
                     </div>
 
                     <div className="mb-4">
-                        <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <label htmlFor="activity-description" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                             Description/Notes
                         </label>
                         <textarea
-                            value={currentActivity.description}
+                            id="activity-description"
+                                value={currentActivity.description}
                             onChange={(e) => setCurrentActivity(prev => ({ ...prev, description: e.target.value }))}
                             className={`w-full p-3 rounded-lg ${darkMode
                                 ? 'bg-gray-600 text-white border border-gray-500'
@@ -110,20 +115,21 @@ const ActivityForm = ({
 
                     <div className="grid md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <p id="priority-label" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Priority
-                            </label>
-                            <div className="flex flex-wrap gap-2">
+                            </p>
+                            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="priority-label">
                                 {priorityLevels.map(priority => (
                                     <button
                                         key={priority}
                                         type="button"
+                                        aria-pressed={currentActivity.priority === priority}
                                         onClick={() => setCurrentActivity(prev => ({ ...prev, priority }))}
                                         className={`flex-1 py-2 px-3 rounded-lg font-medium transition-all duration-200 ${currentActivity.priority === priority
                                             ? priority === 'high'
                                                 ? 'bg-red-500 text-white'
                                                 : priority === 'medium'
-                                                    ? 'bg-yellow-500 text-white'
+                                                    ? 'bg-amber-400 text-gray-900'
                                                     : 'bg-green-500 text-white'
                                             : darkMode
                                                 ? 'bg-gray-600 text-gray-300 hover:bg-gray-500'
@@ -136,14 +142,17 @@ const ActivityForm = ({
                             </div>
                         </div>
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <p id="color-label" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Color Theme
-                            </label>
-                            <div className="flex flex-wrap gap-2">
+                            </p>
+                            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="color-label">
                                 {colors.slice(0, 6).map(color => (
                                     <button
                                         key={color.name}
                                         type="button"
+                                        aria-pressed={currentActivity.color === color.name}
+                                        aria-label={`${color.name} colour`}
+                                        title={color.name}
                                         onClick={() => setCurrentActivity(prev => ({ ...prev, color: color.name }))}
                                         className={`w-10 h-10 rounded-lg ${darkMode ? color.dark : color.light} ${color.border} border-2 transition-all duration-200 ${currentActivity.color === color.name ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : ''
                                             }`}
@@ -175,14 +184,16 @@ const ActivityForm = ({
 
                     <div className="space-y-4">
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <p id="days-label" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Preferred Days
-                            </label>
-                            <div className="flex flex-wrap gap-2">
+                            </p>
+                            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="days-label">
                                 {days.map(day => (
                                     <button
                                         key={day}
                                         type="button"
+                                        aria-pressed={currentActivity.preferredDays.includes(day)}
+                                        aria-label={day}
                                         onClick={() => togglePreference('preferredDays', day)}
                                         className={`px-4 py-2 rounded-lg transition-all duration-200 ${currentActivity.preferredDays.includes(day)
                                             ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg transform scale-105'
@@ -198,14 +209,15 @@ const ActivityForm = ({
                         </div>
 
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <p id="times-label" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Preferred Times
-                            </label>
-                            <div className="flex flex-wrap gap-2">
+                            </p>
+                            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="times-label">
                                 {timetableData.timeSlots.map(time => (
                                     <button
                                         key={time}
                                         type="button"
+                                        aria-pressed={currentActivity.preferredTimes.includes(time)}
                                         onClick={() => togglePreference('preferredTimes', time)}
                                         className={`px-3 py-1 text-sm rounded-lg transition-all duration-200 ${currentActivity.preferredTimes.includes(time)
                                             ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
@@ -221,14 +233,15 @@ const ActivityForm = ({
                         </div>
 
                         <div>
-                            <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            <p id="avoid-label" className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                                 Avoid Times
-                            </label>
-                            <div className="flex flex-wrap gap-2">
+                            </p>
+                            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="avoid-label">
                                 {timetableData.timeSlots.map(time => (
                                     <button
                                         key={time}
                                         type="button"
+                                        aria-pressed={currentActivity.avoidTimes.includes(time)}
                                         onClick={() => togglePreference('avoidTimes', time)}
                                         className={`px-3 py-1 text-sm rounded-lg transition-all duration-200 ${currentActivity.avoidTimes.includes(time)
                                             ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
@@ -246,6 +259,7 @@ const ActivityForm = ({
                 </div>
 
                 <button
+                    type="button"
                     onClick={addActivity}
                     disabled={!currentActivity.name.trim()}
                     className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
@@ -278,7 +292,7 @@ const ActivityForm = ({
                                                 <span className={`ml-3 px-2 py-1 rounded text-xs font-semibold ${activity.priority === 'high'
                                                     ? 'bg-red-500 text-white'
                                                     : activity.priority === 'medium'
-                                                        ? 'bg-yellow-500 text-white'
+                                                        ? 'bg-amber-400 text-gray-900'
                                                         : 'bg-green-500 text-white'
                                                     }`}>
                                                     {activity.priority.toUpperCase()}
@@ -296,7 +310,9 @@ const ActivityForm = ({
                                             </div>
                                         </div>
                                         <button
+                                            type="button"
                                             onClick={() => removeActivity(activity.id)}
+                                            aria-label={`Remove ${activity.name}`}
                                             className="ml-2 p-2 text-red-500 hover:bg-red-100 rounded-lg transition-all duration-200"
                                         >
                                             <X className="w-5 h-5" />
@@ -310,6 +326,7 @@ const ActivityForm = ({
 
                 <div className="flex flex-wrap justify-between gap-3">
                     <button
+                        type="button"
                         onClick={() => setCurrentStep(2)}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode
                             ? 'bg-gray-700 text-white hover:bg-gray-600'
@@ -319,6 +336,7 @@ const ActivityForm = ({
                         ← Back
                     </button>
                     <button
+                        type="button"
                         onClick={generateTimetable}
                         disabled={timetableData.activities.length === 0}
                         className={`px-5 sm:px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${timetableData.activities.length === 0

@@ -20,15 +20,16 @@ const Configuration = ({
 
             <div className="space-y-8">
                 <div>
-                    <label className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <label htmlFor="timetable-name" className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Timetable Name
                     </label>
                     <input
+                        id="timetable-name"
                         type="text"
                         className={`w-full p-4 rounded-lg transition-all duration-200 ${darkMode
                             ? 'bg-gray-700 text-white border border-gray-600 focus:border-purple-400'
                             : 'bg-white text-gray-800 border-2 border-gray-200 focus:border-blue-500'
-                            } focus:ring-4 focus:ring-opacity-20 focus:ring-blue-500`}
+                            } focus:outline-none focus:ring-4 focus:ring-blue-500/20`}
                         placeholder="Enter a memorable name for your timetable..."
                         value={timetableData.name}
                         onChange={(e) => setTimetableData(prev => ({ ...prev, name: e.target.value }))}
@@ -36,14 +37,16 @@ const Configuration = ({
                 </div>
 
                 <div>
-                    <label className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p id="slots-label" className={`block text-sm font-semibold mb-3 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                         Select Time Slots
-                    </label>
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4">
+                    </p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4" role="group" aria-labelledby="slots-label">
                         {timeSlots.map((slot) => (
                             <button
+                                type="button"
                                 key={slot}
-                                onClick={() => addTimeSlot(slot)}
+                                aria-pressed={timetableData.timeSlots.includes(slot)}
+                                onClick={() => (timetableData.timeSlots.includes(slot) ? removeTimeSlot(slot) : addTimeSlot(slot))}
                                 className={`p-2 text-sm rounded-lg transition-all duration-200 transform hover:scale-105 ${timetableData.timeSlots.includes(slot)
                                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
                                     : darkMode
@@ -63,16 +66,18 @@ const Configuration = ({
                             </p>
                             <div className="flex flex-wrap gap-2">
                                 {timetableData.timeSlots.map((slot) => (
-                                    <span
+                                    <button
+                                        type="button"
                                         key={slot}
                                         onClick={() => removeTimeSlot(slot)}
+                                        aria-label={`Remove ${slot}`}
                                         className={`px-3 py-1 rounded-full text-sm cursor-pointer transition-all duration-200 transform hover:scale-105 ${darkMode
                                             ? 'bg-purple-600 text-white hover:bg-red-600'
                                             : 'bg-blue-100 text-blue-800 hover:bg-red-100 hover:text-red-800'
                                             }`}
                                     >
-                                        {slot} ×
-                                    </span>
+                                        {slot} <span aria-hidden="true">×</span>
+                                    </button>
                                 ))}
                             </div>
                         </div>
@@ -98,9 +103,9 @@ const Configuration = ({
                                             ...prev,
                                             [key]: e.target.checked
                                         }))}
-                                        className="sr-only"
+                                        className="sr-only peer"
                                     />
-                                    <div className={`w-12 h-6 rounded-full transition-colors duration-200 ${value
+                                    <div className={`w-12 h-6 rounded-full transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-purple-500 peer-focus-visible:ring-offset-2 ${value
                                         ? 'bg-gradient-to-r from-blue-500 to-purple-500'
                                         : darkMode ? 'bg-gray-600' : 'bg-gray-300'
                                         }`}>
@@ -120,6 +125,7 @@ const Configuration = ({
 
                 <div className="flex flex-wrap justify-between gap-3">
                     <button
+                        type="button"
                         onClick={() => setCurrentStep(1)}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 ${darkMode
                             ? 'bg-gray-700 text-white hover:bg-gray-600'
@@ -129,6 +135,7 @@ const Configuration = ({
                         ← Back
                     </button>
                     <button
+                        type="button"
                         onClick={() => setCurrentStep(3)}
                         disabled={!timetableData.name || timetableData.timeSlots.length === 0}
                         className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${!timetableData.name || timetableData.timeSlots.length === 0
