@@ -109,6 +109,25 @@ describe('App', () => {
     expect(screen.getByText(/No conflicts detected/)).toBeTruthy();
   });
 
+  it('places an activity the chosen number of times a week, on different days', async () => {
+    renderApp();
+    fireEvent.click(await screen.findByRole('button', { name: /School/ }));
+    fireEvent.change(screen.getByLabelText('Timetable name'), { target: { value: 'My Week' } });
+    fireEvent.click(button('9:00 AM'));
+    fireEvent.click(button('Continue'));
+
+    fireEvent.change(screen.getByLabelText('Activity name'), { target: { value: 'Physics' } });
+    fireEvent.change(screen.getByLabelText('How often'), { target: { value: '3' } });
+    fireEvent.click(button(/Add activity/));
+    expect(screen.getByText(/1 hour, 3 times a week/)).toBeTruthy();
+    fireEvent.click(button(/Generate timetable/));
+
+    const table = await screen.findByRole('table');
+    const cells = within(table).getAllByText('Physics').map(el => el.closest('td'));
+    expect(cells).toHaveLength(3);
+    expect(screen.getByText(/No conflicts detected/)).toBeTruthy();
+  });
+
   it('exports the timetable as a spreadsheet and a calendar file', async () => {
     const files = [];
     const createObjectURL = vi.fn((blob) => { files.push(blob); return 'blob:test'; });

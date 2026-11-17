@@ -81,6 +81,7 @@ export const EMPTY_ACTIVITY = {
   room: '',
   color: 'blue',
   description: '',
+  timesPerWeek: 1,
   recurring: false
 };
 

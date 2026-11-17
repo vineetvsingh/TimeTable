@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, X, Pencil, Save, ChevronLeft, Check, Repeat, ListPlus } from 'lucide-react';
+import { Plus, X, Pencil, Save, ChevronLeft, Check, ListPlus } from 'lucide-react';
 import { useTimetable } from '../../context/TimetableContext';
 import { PRIORITY_LEVELS, PRIORITY_STYLES, COLORS, DAYS, colorStyle } from '../../constants';
 import { formatDuration, slotMinutesOf } from '../../utils/time';
@@ -8,6 +8,12 @@ import Chip from '../ui/Chip';
 import { fieldClass, labelClass, sectionTitleClass, hintClass } from '../ui/styles';
 
 const capitalise = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
+const frequencyLabel = (activity) => {
+    if (activity.recurring) return 'every day';
+    const times = Number(activity.timesPerWeek) || 1;
+    return times > 1 ? `${times} times a week` : 'once a week';
+};
 
 const ActivityForm = () => {
     const {
@@ -143,19 +149,29 @@ const ActivityForm = () => {
                             </div>
                         </div>
 
-                        <label htmlFor="recurring" className="flex cursor-pointer items-start gap-3 rounded-lg border border-rule p-3">
-                            <input
-                                type="checkbox"
-                                id="recurring"
-                                checked={currentActivity.recurring}
-                                onChange={(e) => setCurrentActivity(prev => ({ ...prev, recurring: e.target.checked }))}
-                                className="mt-1 h-4 w-4"
-                            />
-                            <span>
-                                <span className="block font-medium text-ink">Repeat every day</span>
-                                <span className="block text-sm text-muted">Placed on every day of the timetable (or every day picked below) instead of once a week.</span>
-                            </span>
-                        </label>
+                        <div>
+                            <label htmlFor="activity-frequency" className={labelClass}>How often</label>
+                            <select
+                                id="activity-frequency"
+                                value={currentActivity.recurring ? 'daily' : String(currentActivity.timesPerWeek || 1)}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    setCurrentActivity(prev => (value === 'daily'
+                                        ? { ...prev, recurring: true }
+                                        : { ...prev, recurring: false, timesPerWeek: Number(value) }));
+                                }}
+                                className={`${fieldClass} sm:max-w-xs`}
+                            >
+                                <option value="1">Once a week</option>
+                                {[2, 3, 4, 5, 6].map(times => (
+                                    <option key={times} value={times}>{times} times a week</option>
+                                ))}
+                                <option value="daily">Every day</option>
+                            </select>
+                            <p className={`${hintClass} mt-1.5`}>
+                                Each time goes on a different day where possible. Every day means each day of the timetable, or each day picked below.
+                            </p>
+                        </div>
                     </section>
 
                     <section className="space-y-4 border-t border-rule pt-6">
@@ -255,12 +271,9 @@ const ActivityForm = () => {
                                         <div className="min-w-0 flex-1">
                                             <div className="flex flex-wrap items-center gap-1.5">
                                                 <h4 className="truncate font-sans font-semibold text-ink">{activity.name}</h4>
-                                                {activity.recurring && (
-                                                    <Repeat className="h-3.5 w-3.5 text-muted" aria-label="Repeats every day" />
-                                                )}
                                             </div>
                                             <p className="mt-0.5 text-xs text-muted">
-                                                {[lengthLabel(activity.duration), activity.instructor, activity.room].filter(Boolean).join(', ')}
+                                                {[lengthLabel(activity.duration), frequencyLabel(activity), activity.instructor, activity.room].filter(Boolean).join(', ')}
                                             </p>
                                             <span className={`mt-1.5 inline-block rounded px-1.5 py-0.5 text-xs font-medium ${PRIORITY_STYLES[activity.priority] || PRIORITY_STYLES.medium}`}>
                                                 {capitalise(activity.priority)} priority

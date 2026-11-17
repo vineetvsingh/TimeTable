@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { greedyScheduler, detectConflicts, sortTimeSlots } from '../utils/scheduler';
+import { buildSchedule, detectConflicts, sortTimeSlots } from '../utils/scheduler';
 import { storage, draftKey } from '../utils/storage';
 import { slotMinutesOf, slotPaletteFor } from '../utils/time';
 import { timetableToCSV, timetableToICS, downloadFile, fileNameFor } from '../utils/exporters';
@@ -51,7 +51,7 @@ const loadDraft = (uid) => {
 };
 
 const conflictsFor = (schedule, data) =>
-  schedule ? detectConflicts(schedule, data.activities, data.timeSlots) : [];
+  schedule ? detectConflicts(schedule, data.activities, data.timeSlots, slotMinutesOf(data)) : [];
 
 export const TimetableProvider = ({ user, children }) => {
   const { notify, confirm } = useFeedback();
@@ -176,13 +176,19 @@ export const TimetableProvider = ({ user, children }) => {
 
   const generateTimetable = () => {
     const workingDays = WORKING_DAYS[timetableType] || DAYS.slice(0, 5);
-    const generated = greedyScheduler(
+    const run = () => buildSchedule(
       timetableData.activities,
       timetableData.timeSlots,
       workingDays,
       optimizationSettings,
       slotMinutesOf(timetableData)
     );
+    // Regenerate should show a different arrangement whenever one exists.
+    const previous = generatedTimetable && JSON.stringify(generatedTimetable);
+    let generated = run();
+    for (let attempt = 0; attempt < 5 && JSON.stringify(generated) === previous; attempt++) {
+      generated = run();
+    }
     setGeneratedTimetable(generated);
     setConflicts(conflictsFor(generated, timetableData));
     setCurrentStep(4);
