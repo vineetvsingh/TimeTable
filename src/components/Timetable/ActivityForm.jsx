@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, X, Sparkles } from 'lucide-react';
+import { Plus, X, Sparkles, Pencil, Save } from 'lucide-react';
 
 const ActivityForm = ({
     currentActivity,
@@ -7,6 +7,9 @@ const ActivityForm = ({
     timetableData,
     addActivity,
     removeActivity,
+    editingActivityId,
+    startEditActivity,
+    cancelEditActivity,
     togglePreference,
     generateTimetable,
     setCurrentStep,
@@ -258,18 +261,48 @@ const ActivityForm = ({
                     </div>
                 </div>
 
-                <button
-                    type="button"
-                    onClick={addActivity}
-                    disabled={!currentActivity.name.trim()}
-                    className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
-                        ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
-                        : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
-                        }`}
-                >
-                    <Plus className="w-5 h-5 inline mr-2" />
-                    Add Activity
-                </button>
+                {editingActivityId && (
+                    <p role="status" className={`text-sm font-medium ${darkMode ? 'text-purple-300' : 'text-purple-700'}`}>
+                        Editing an activity. Change the details above, then save.
+                    </p>
+                )}
+                <div className="flex flex-wrap gap-3">
+                    <div className="flex-1 min-w-[12rem]">
+                    <button
+                        type="button"
+                        onClick={addActivity}
+                        disabled={!currentActivity.name.trim()}
+                        className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${!currentActivity.name.trim()
+                            ? darkMode ? 'bg-gray-700 text-gray-500' : 'bg-gray-200 text-gray-400'
+                            : 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
+                            }`}
+                    >
+                        {editingActivityId ? (
+                            <>
+                                <Save className="w-5 h-5 inline mr-2" aria-hidden="true" />
+                                Save Changes
+                            </>
+                        ) : (
+                            <>
+                                <Plus className="w-5 h-5 inline mr-2" aria-hidden="true" />
+                                Add Activity
+                            </>
+                        )}
+                    </button>
+                    </div>
+                    {editingActivityId && (
+                        <button
+                            type="button"
+                            onClick={cancelEditActivity}
+                            className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${darkMode
+                                ? 'bg-gray-700 text-white hover:bg-gray-600'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                        >
+                            Cancel
+                        </button>
+                    )}
+                </div>
 
                 {/* Activities List */}
                 {timetableData.activities.length > 0 && (
@@ -281,7 +314,7 @@ const ActivityForm = ({
                             {timetableData.activities.map((activity) => (
                                 <div
                                     key={activity.id}
-                                    className={`p-4 rounded-lg border-l-4 ${darkMode ? activity.colorDark : activity.colorLight} ${activity.borderColor} transition-all duration-200 hover:shadow-lg`}
+                                    className={`p-4 rounded-lg border-l-4 ${activity.id === editingActivityId ? 'ring-2 ring-purple-500' : ''} ${darkMode ? activity.colorDark : activity.colorLight} ${activity.borderColor} transition-all duration-200 hover:shadow-lg`}
                                 >
                                     <div className="flex justify-between items-start">
                                         <div className="flex-1">
@@ -309,6 +342,18 @@ const ActivityForm = ({
                                                 {activity.room && <div>📍 Room: {activity.room}</div>}
                                             </div>
                                         </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                startEditActivity(activity);
+                                                // Move focus (and scroll) to the form being edited.
+                                                setTimeout(() => document.getElementById('activity-name')?.focus(), 0);
+                                            }}
+                                            aria-label={`Edit ${activity.name}`}
+                                            className="ml-2 p-2 text-blue-500 hover:bg-blue-100 rounded-lg transition-all duration-200"
+                                        >
+                                            <Pencil className="w-5 h-5" />
+                                        </button>
                                         <button
                                             type="button"
                                             onClick={() => removeActivity(activity.id)}

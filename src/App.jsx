@@ -139,6 +139,8 @@ const IntegratedTimetableApp = () => {
   });
 
   const [currentActivity, setCurrentActivity] = useState(EMPTY_ACTIVITY);
+  // Id of the activity being edited in the form, or null when adding a new one.
+  const [editingActivityId, setEditingActivityId] = useState(null);
 
   // Saved Timetables State
   const [savedTimetables, setSavedTimetables] = useState([]);
@@ -394,23 +396,41 @@ const IntegratedTimetableApp = () => {
     }));
   };
 
+  // Adds the activity in the form, or saves changes to the one being edited.
   const addActivity = () => {
-    if (currentActivity.name.trim() && currentActivity.duration) {
-      const colorObj = colors.find(c => c.name === currentActivity.color) || colors[0];
-      const newActivity = {
-        ...currentActivity,
-        name: currentActivity.name.trim(),
-        id: Date.now() + Math.random(),
-        colorLight: colorObj.light,
-        colorDark: colorObj.dark,
-        borderColor: colorObj.border
-      };
-      setTimetableData(prev => ({
-        ...prev,
-        activities: [...prev.activities, newActivity]
-      }));
-      setCurrentActivity(EMPTY_ACTIVITY);
-    }
+    if (!currentActivity.name.trim() || !currentActivity.duration) return;
+
+    const colorObj = colors.find(c => c.name === currentActivity.color) || colors[0];
+    const activity = {
+      ...currentActivity,
+      name: currentActivity.name.trim(),
+      id: editingActivityId ?? Date.now() + Math.random(),
+      colorLight: colorObj.light,
+      colorDark: colorObj.dark,
+      borderColor: colorObj.border
+    };
+    setTimetableData(prev => ({
+      ...prev,
+      activities: editingActivityId
+        ? prev.activities.map(a => (a.id === editingActivityId ? activity : a))
+        : [...prev.activities, activity]
+    }));
+    if (editingActivityId) notify(`Updated "${activity.name}". Generate again to apply the change.`, 'success');
+    setCurrentActivity(EMPTY_ACTIVITY);
+    setEditingActivityId(null);
+  };
+
+  const startEditActivity = (activity) => {
+    const fields = Object.fromEntries(
+      Object.keys(EMPTY_ACTIVITY).map(key => [key, activity[key] ?? EMPTY_ACTIVITY[key]])
+    );
+    setCurrentActivity(fields);
+    setEditingActivityId(activity.id);
+  };
+
+  const cancelEditActivity = () => {
+    setCurrentActivity(EMPTY_ACTIVITY);
+    setEditingActivityId(null);
   };
 
   const removeActivity = (id) => {
@@ -418,6 +438,7 @@ const IntegratedTimetableApp = () => {
       ...prev,
       activities: prev.activities.filter(a => a.id !== id)
     }));
+    if (id === editingActivityId) cancelEditActivity();
   };
 
   const togglePreference = (type, value) => {
@@ -465,6 +486,7 @@ const IntegratedTimetableApp = () => {
     setTimetableType('');
     setTimetableData(EMPTY_TIMETABLE);
     setCurrentActivity(EMPTY_ACTIVITY);
+    setEditingActivityId(null);
     setGeneratedTimetable(null);
     setConflicts([]);
     setCurrentTimetableId(null);
@@ -706,6 +728,9 @@ const IntegratedTimetableApp = () => {
         removeTimeSlot={removeTimeSlot}
         addActivity={addActivity}
         removeActivity={removeActivity}
+        editingActivityId={editingActivityId}
+        startEditActivity={startEditActivity}
+        cancelEditActivity={cancelEditActivity}
         togglePreference={togglePreference}
         generateTimetable={generateTimetable}
         regenerateTimetable={regenerateTimetable}

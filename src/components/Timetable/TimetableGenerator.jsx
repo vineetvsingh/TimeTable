@@ -23,6 +23,9 @@ const TimetableGenerator = ({
     removeTimeSlot,
     addActivity,
     removeActivity,
+    editingActivityId,
+    startEditActivity,
+    cancelEditActivity,
     togglePreference,
     generateTimetable,
     regenerateTimetable,
@@ -203,6 +206,9 @@ const TimetableGenerator = ({
                                     timetableData={timetableData}
                                     addActivity={addActivity}
                                     removeActivity={removeActivity}
+                                    editingActivityId={editingActivityId}
+                                    startEditActivity={startEditActivity}
+                                    cancelEditActivity={cancelEditActivity}
                                     togglePreference={togglePreference}
                                     generateTimetable={generateTimetable}
                                     setCurrentStep={setCurrentStep}
