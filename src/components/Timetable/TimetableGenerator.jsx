@@ -8,11 +8,33 @@ import GeneratedTimetable from './GeneratedTimetable';
 import SavedTimetables from './SavedTimetables';
 import { useTheme } from '../../context/ThemeContext';
 import { useTimetable } from '../../context/TimetableContext';
+import { useStepHistory, parseHash } from '../../hooks/useStepHistory';
 
 const TimetableGenerator = ({ currentUser, onLogout }) => {
-    const { currentStep, generatedTimetable, loadTimetable, refreshSavedTimetables } = useTimetable();
+    const {
+        currentStep,
+        setCurrentStep,
+        timetableData,
+        generatedTimetable,
+        loadTimetable,
+        refreshSavedTimetables
+    } = useTimetable();
     const { darkMode, toggleDarkMode } = useTheme();
-    const [view, setView] = useState('generator'); // 'generator' or 'saved'
+    // 'generator' or 'saved'; opening the app at #saved starts on the list.
+    const [view, setView] = useState(() => parseHash(window.location.hash)?.view || 'generator');
+
+    // Browser Back/Forward move between steps and the saved list.
+    useStepHistory({
+        view,
+        setView,
+        step: currentStep,
+        setStep: setCurrentStep,
+        canShowStep: (step) => {
+            if (step === 3) return Boolean(timetableData.name && timetableData.timeSlots.length);
+            if (step === 4) return Boolean(generatedTimetable);
+            return true;
+        }
+    });
     // Set when "Print" is chosen on a saved timetable: once it has been loaded
     // and rendered in the generator view, open the print dialog.
     const [printPending, setPrintPending] = useState(false);

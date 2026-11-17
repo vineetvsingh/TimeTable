@@ -195,6 +195,7 @@ export const useAuth = ({ notify }) => {
       // Drop this user's in-progress draft so it isn't left on a shared device.
       if (currentUser) storage.remove(draftKey(currentUser.uid));
       await signOut(auth);
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
       setCurrentUser(null);
       setFormData(EMPTY_FORM);
       setAuthErrors({});

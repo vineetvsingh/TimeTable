@@ -86,6 +86,7 @@ const buildTimetable = async () => {
 };
 
 beforeEach(() => {
+  window.history.replaceState(null, '', '/');
   localStorage.clear();
   document.documentElement.classList.remove('dark');
   fb.savedDocs = [];
@@ -206,6 +207,38 @@ describe('App', () => {
     renderApp();
     expect(await screen.findByText('Your Smart Timetable')).toBeTruthy();
     expect(within(screen.getByRole('table')).getByText('Maths')).toBeTruthy();
+  });
+
+  it('moves between steps with the browser Back and Forward buttons', async () => {
+    renderApp();
+    await buildTimetable();
+    expect(window.location.hash).toBe('#step-4');
+
+    window.history.back();
+    expect(await screen.findByText('Add Activities & Subjects')).toBeTruthy();
+    expect(window.location.hash).toBe('#step-3');
+
+    window.history.back();
+    expect(await screen.findByText('Configure Your Timetable')).toBeTruthy();
+
+    window.history.forward();
+    expect(await screen.findByText('Add Activities & Subjects')).toBeTruthy();
+
+    fireEvent.click(button(/My Timetables/));
+    await waitFor(() => expect(window.location.hash).toBe('#saved'));
+    window.history.back();
+    expect(await screen.findByText('Add Activities & Subjects')).toBeTruthy();
+  });
+
+  it('does not go forward to a result that was cleared by Start Over', async () => {
+    renderApp();
+    await buildTimetable();
+    fireEvent.click(button(/Start Over/));
+    expect(await screen.findByText('Choose Your Timetable Type')).toBeTruthy();
+
+    window.history.back(); // the old #step-4 entry
+    await waitFor(() => expect(window.location.hash).not.toBe('#step-4'));
+    expect(screen.queryByText('Your Smart Timetable')).toBeNull();
   });
 
   it('logs out and clears the draft', async () => {
