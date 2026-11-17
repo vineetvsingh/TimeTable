@@ -109,6 +109,41 @@ describe('App', () => {
     expect(screen.getByText(/No conflicts detected/)).toBeTruthy();
   });
 
+  it('exports the timetable as a spreadsheet and a calendar file', async () => {
+    const files = [];
+    const createObjectURL = vi.fn((blob) => { files.push(blob); return 'blob:test'; });
+    const clicked = [];
+    vi.stubGlobal('URL', Object.assign(Object.create(URL), { createObjectURL, revokeObjectURL: vi.fn() }));
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function () {
+      clicked.push(this.download);
+    });
+    try {
+      renderApp();
+      await buildTimetable();
+
+      const exportButton = button(/Export/);
+      fireEvent.click(exportButton);
+      expect(exportButton.getAttribute('aria-expanded')).toBe('true');
+      fireEvent.click(button(/Spreadsheet/));
+      expect(exportButton.getAttribute('aria-expanded')).toBe('false');
+      await screen.findByText(/Downloaded My Week\.csv/);
+
+      fireEvent.click(exportButton);
+      fireEvent.click(button(/Calendar/));
+      await screen.findByText(/Downloaded My Week\.ics/);
+
+      expect(clicked).toEqual(['My Week.csv', 'My Week.ics']);
+      const [csv, ics] = await Promise.all(files.map((file) => file.text()));
+      expect(csv).toContain('Time,Monday,Tuesday,Wednesday,Thursday,Friday');
+      expect(csv).toContain('Maths');
+      expect(ics.match(/BEGIN:VEVENT/g).length).toBeGreaterThan(0);
+      expect(ics).toContain('SUMMARY:Maths');
+    } finally {
+      click.mockRestore();
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('saves once, then updates the same saved timetable', async () => {
     renderApp();
     await buildTimetable();

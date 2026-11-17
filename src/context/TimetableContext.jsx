@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { greedyScheduler, detectConflicts, sortTimeSlots } from '../utils/scheduler';
 import { storage, draftKey } from '../utils/storage';
 import { slotMinutesOf, slotPaletteFor } from '../utils/time';
+import { timetableToCSV, timetableToICS, downloadFile, fileNameFor } from '../utils/exporters';
 import { useSavedTimetables } from '../hooks/useSavedTimetables';
 import { useFeedback } from '../components/Common/Feedback';
 import {
@@ -197,31 +198,21 @@ export const TimetableProvider = ({ user, children }) => {
     setCurrentTimetableId(null);
   };
 
-  const exportTimetable = () => {
+  // format: 'csv' (spreadsheet) or 'ics' (calendar with weekly repeating events)
+  const exportTimetable = (format) => {
+    if (!generatedTimetable) return;
     try {
-      const exportData = {
-        name: timetableData.name,
-        type: timetableType,
-        schedule: generatedTimetable,
-        activities: timetableData.activities,
-        timeSlots: timetableData.timeSlots,
-        slotMinutes: slotMinutesOf(timetableData),
-        exportedAt: new Date().toISOString()
-      };
-      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const safeName = (timetableData.name || 'timetable').replace(/[^a-z0-9-_ ]/gi, '_').trim() || 'timetable';
-
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${safeName}_${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      const fileName = fileNameFor(timetableData.name, format);
+      if (format === 'ics') {
+        downloadFile(timetableToICS(generatedTimetable, timetableData), fileName, 'text/calendar;charset=utf-8');
+        notify(`Downloaded ${fileName}. Open it to add the activities to your calendar.`, 'success');
+      } else {
+        downloadFile(timetableToCSV(generatedTimetable, timetableData), fileName, 'text/csv;charset=utf-8');
+        notify(`Downloaded ${fileName}. It opens in Excel or Google Sheets.`, 'success');
+      }
     } catch (error) {
       console.error('Error exporting timetable:', error);
-      notify('Error exporting timetable. Please try again.', 'error');
+      notify("Couldn't create the file. Please try again.", 'error');
     }
   };
 

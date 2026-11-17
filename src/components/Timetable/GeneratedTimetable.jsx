@@ -1,6 +1,7 @@
 import React from 'react';
-import { CheckCircle2, AlertTriangle, RefreshCw, Download, Pencil, Cloud, Printer, RotateCcw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, RefreshCw, Pencil, Cloud, Printer, RotateCcw } from 'lucide-react';
 import ConflictsPanel from './ConflictsPanel';
+import ExportMenu from './ExportMenu';
 import TimetableGrid from './TimetableGrid';
 import { useTimetable } from '../../context/TimetableContext';
 import Button from '../ui/Button';
@@ -62,10 +63,7 @@ const GeneratedTimetable = () => {
                         <Printer className="h-4 w-4" aria-hidden="true" />
                         Print
                     </Button>
-                    <Button variant="secondary" size="sm" onClick={exportTimetable}>
-                        <Download className="h-4 w-4" aria-hidden="true" />
-                        Export
-                    </Button>
+                    <ExportMenu onExport={exportTimetable} />
                     <Button size="sm" onClick={saveTimetable} disabled={isSaving}>
                         <Cloud className="h-4 w-4" aria-hidden="true" />
                         {isSaving ? 'Saving…' : isSavedTimetable ? 'Update saved copy' : 'Save to my timetables'}

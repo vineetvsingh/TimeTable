@@ -2,12 +2,7 @@ import React from 'react';
 import { AlertCircle, Clock, User, MapPin } from 'lucide-react';
 import { colorStyle } from '../../constants';
 import { formatDuration, formatTime, slotMinutesOf, toMinutes } from '../../utils/time';
-
-const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-// Firestore returns map keys alphabetically, so put days back in week order.
-const orderedDays = (schedule) =>
-    Object.keys(schedule).sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
+import { orderedDays } from '../../utils/exporters';
 
 const iconClass = 'h-3 w-3 shrink-0';
 
@@ -62,7 +57,7 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
                         <tr key={slot} className="border-b border-rule last:border-b-0">
                             <th
                                 scope="row"
-                                className="sticky left-0 z-10 h-[5.25rem] whitespace-nowrap bg-surface px-3 py-2 text-left align-top tabular-nums sm:px-4 print:static"
+                                className="sticky left-0 z-10 h-[5.25rem] whitespace-nowrap bg-surface px-3 py-2 text-left align-top tabular-nums sm:px-4 print:static print:h-auto print:py-1.5"
                             >
                                 <span className="block text-sm font-semibold text-ink">{slot}</span>{' '}
                                 <span className="block text-xs font-normal text-muted">
@@ -74,10 +69,10 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
                                 if (covered) return null;
 
                                 return (
-                                    <td key={day} rowSpan={span} className="h-px border-l border-rule p-1.5 align-top">
+                                    <td key={day} rowSpan={span} className="h-px border-l border-rule p-1.5 align-top print:p-1">
                                         {entry ? (
                                             <div
-                                                className={`flex h-full min-h-[4.5rem] flex-col gap-1 rounded-md border-l-[3px] px-2.5 py-2 ${colorStyle(entry.color).block}`}
+                                                className={`flex h-full min-h-[4.5rem] flex-col gap-1 rounded-md border-l-[3px] px-2.5 py-2 print:min-h-0 print:gap-0.5 print:py-1 ${colorStyle(entry.color).block}`}
                                             >
                                                 <div className="flex items-start justify-between gap-1">
                                                     <span className="text-sm font-semibold leading-snug text-ink">
@@ -87,9 +82,13 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
                                                         <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" aria-label="Conflict" />
                                                     )}
                                                 </div>
-                                                {span > 1 && <Meta icon={<Clock className={iconClass} aria-hidden="true" />}>{formatDuration(span * slotMinutes)}</Meta>}
-                                                {entry.instructor && <Meta icon={<User className={iconClass} aria-hidden="true" />}>{entry.instructor}</Meta>}
-                                                {entry.room && <Meta icon={<MapPin className={iconClass} aria-hidden="true" />}>{entry.room}</Meta>}
+                                                {(span > 1 || entry.instructor || entry.room) && (
+                                                    <div className="flex flex-col gap-1 print:flex-row print:flex-wrap print:gap-x-2.5 print:gap-y-0">
+                                                        {span > 1 && <Meta icon={<Clock className={iconClass} aria-hidden="true" />}>{formatDuration(span * slotMinutes)}</Meta>}
+                                                        {entry.instructor && <Meta icon={<User className={iconClass} aria-hidden="true" />}>{entry.instructor}</Meta>}
+                                                        {entry.room && <Meta icon={<MapPin className={iconClass} aria-hidden="true" />}>{entry.room}</Meta>}
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : (
                                             <span className="sr-only">Free</span>
