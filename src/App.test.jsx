@@ -72,17 +72,17 @@ const button = (name) => screen.getByRole('button', { name });
 
 // Builds a school timetable with one 2-hour activity and generates it.
 const buildTimetable = async () => {
-  fireEvent.click(await screen.findByRole('button', { name: /School Schedule/ }));
-  fireEvent.change(screen.getByLabelText('Timetable Name'), { target: { value: 'My Week' } });
+  fireEvent.click(await screen.findByRole('button', { name: /School/ }));
+  fireEvent.change(screen.getByLabelText('Timetable name'), { target: { value: 'My Week' } });
   fireEvent.click(button('9:00 AM'));
   fireEvent.click(button('10:00 AM'));
-  fireEvent.click(button('Next →'));
+  fireEvent.click(button('Continue'));
 
-  fireEvent.change(screen.getByLabelText('Activity Name *'), { target: { value: 'Maths' } });
+  fireEvent.change(screen.getByLabelText('Activity name'), { target: { value: 'Maths' } });
   fireEvent.change(screen.getByLabelText('Duration'), { target: { value: '2' } });
-  fireEvent.click(button(/Add Activity/));
-  fireEvent.click(button(/Generate Smart Timetable/));
-  await screen.findByText('Your Smart Timetable');
+  fireEvent.click(button(/Add activity/));
+  fireEvent.click(button(/Generate timetable/));
+  await screen.findByRole('table');
 };
 
 beforeEach(() => {
@@ -113,12 +113,12 @@ describe('App', () => {
     renderApp();
     await buildTimetable();
 
-    fireEvent.click(button(/Save to Cloud/));
+    fireEvent.click(button(/Save to my timetables/));
     await screen.findByText('Timetable saved to the cloud.');
     expect(fb.addDoc).toHaveBeenCalledTimes(1);
     expect(fb.addDoc.mock.calls[0][1]).toMatchObject({ name: 'My Week', userId: 'user-1' });
 
-    fireEvent.click(await screen.findByRole('button', { name: /Update Saved/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Update saved copy/ }));
     await screen.findByText('Saved timetable updated.');
     expect(fb.addDoc).toHaveBeenCalledTimes(1);
     expect(fb.updateDoc).toHaveBeenCalledTimes(1);
@@ -131,19 +131,19 @@ describe('App', () => {
 
     fireEvent.click(button(/Edit$/));
     fireEvent.click(button('Edit Maths'));
-    expect(screen.getByLabelText('Activity Name *').value).toBe('Maths');
-    fireEvent.change(screen.getByLabelText('Activity Name *'), { target: { value: 'Algebra' } });
-    fireEvent.click(button(/Save Changes/));
+    expect(screen.getByLabelText('Activity name').value).toBe('Maths');
+    fireEvent.change(screen.getByLabelText('Activity name'), { target: { value: 'Algebra' } });
+    fireEvent.click(button(/Save changes/));
 
     expect(screen.getByText('Algebra')).toBeTruthy();
     expect(screen.queryByText('Maths')).toBeNull();
-    expect(button(/Add Activity/)).toBeTruthy();
+    expect(button(/Add activity/)).toBeTruthy();
   });
 
   it('builds a timetable with 45-minute slots', async () => {
     renderApp();
-    fireEvent.click(await screen.findByRole('button', { name: /School Schedule/ }));
-    fireEvent.change(screen.getByLabelText('Timetable Name'), { target: { value: 'Short periods' } });
+    fireEvent.click(await screen.findByRole('button', { name: /School/ }));
+    fireEvent.change(screen.getByLabelText('Timetable name'), { target: { value: 'Short periods' } });
     fireEvent.change(screen.getByLabelText('Day starts'), { target: { value: '09:00' } });
     fireEvent.change(screen.getByLabelText('Day ends'), { target: { value: '11:00' } });
     fireEvent.change(screen.getByLabelText('Slot length'), { target: { value: '45' } });
@@ -151,15 +151,15 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: '10:30 AM' })).toBeNull(); // would end at 11:15
 
     fireEvent.click(button('Select all'));
-    fireEvent.click(button('Next →'));
-    fireEvent.change(screen.getByLabelText('Activity Name *'), { target: { value: 'Maths' } });
+    fireEvent.click(button('Continue'));
+    fireEvent.change(screen.getByLabelText('Activity name'), { target: { value: 'Maths' } });
     fireEvent.change(screen.getByLabelText('Duration'), { target: { value: '2' } });
     expect(screen.getByRole('option', { name: '2 slots (1 h 30 min)' })).toBeTruthy();
-    fireEvent.click(button(/Add Activity/));
-    fireEvent.click(button(/Generate Smart Timetable/));
+    fireEvent.click(button(/Add activity/));
+    fireEvent.click(button(/Generate timetable/));
 
-    await screen.findByText('Your Smart Timetable');
-    expect(screen.getByText('9:00 – 9:45 AM')).toBeTruthy();
+    await screen.findByRole('table');
+    expect(screen.getByRole('rowheader', { name: '9:00 AM to 9:45 AM' })).toBeTruthy();
     expect(screen.getByText(/1 h 30 min/, { selector: 'table *' })).toBeTruthy();
   });
 
@@ -176,7 +176,7 @@ describe('App', () => {
     renderApp();
     await screen.findByText('Test User');
 
-    fireEvent.click(button(/My Timetables/));
+    fireEvent.click(button(/My timetables/));
     expect(await screen.findByText('Saved Week')).toBeTruthy();
 
     fireEvent.click(button('Delete timetable'));
@@ -187,9 +187,9 @@ describe('App', () => {
 
     fireEvent.click(button('Open timetable'));
     expect(await screen.findByText('Physics', { selector: 'table *' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: /Update Saved/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Update saved copy/ })).toBeTruthy();
 
-    fireEvent.click(button(/My Timetables/));
+    fireEvent.click(button(/My timetables/));
     fireEvent.click(await screen.findByRole('button', { name: 'Delete timetable' }));
     fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Delete' }));
     await screen.findByText('Timetable deleted.');
@@ -201,12 +201,12 @@ describe('App', () => {
     renderApp();
     await screen.findByText('Test User');
 
-    fireEvent.click(button(/My Timetables/));
+    fireEvent.click(button(/My timetables/));
     expect(await screen.findByText("Couldn't load your timetables")).toBeTruthy();
 
     fb.failLoad = false;
     fireEvent.click(button(/Try again/));
-    expect(await screen.findByText('No Saved Timetables')).toBeTruthy();
+    expect(await screen.findByText('No saved timetables yet')).toBeTruthy();
   });
 
   it('toggles and remembers dark mode', async () => {
@@ -228,7 +228,7 @@ describe('App', () => {
     cleanup();
 
     renderApp();
-    expect(await screen.findByText('Your Smart Timetable')).toBeTruthy();
+    expect(await screen.findByRole('table')).toBeTruthy();
     expect(within(screen.getByRole('table')).getByText('Maths')).toBeTruthy();
   });
 
@@ -238,30 +238,30 @@ describe('App', () => {
     expect(window.location.hash).toBe('#step-4');
 
     window.history.back();
-    expect(await screen.findByText('Add Activities & Subjects')).toBeTruthy();
+    expect(await screen.findByText('Add activities', { selector: 'h2' })).toBeTruthy();
     expect(window.location.hash).toBe('#step-3');
 
     window.history.back();
-    expect(await screen.findByText('Configure Your Timetable')).toBeTruthy();
+    expect(await screen.findByText('Set up your day')).toBeTruthy();
 
     window.history.forward();
-    expect(await screen.findByText('Add Activities & Subjects')).toBeTruthy();
+    expect(await screen.findByText('Add activities', { selector: 'h2' })).toBeTruthy();
 
-    fireEvent.click(button(/My Timetables/));
+    fireEvent.click(button(/My timetables/));
     await waitFor(() => expect(window.location.hash).toBe('#saved'));
     window.history.back();
-    expect(await screen.findByText('Add Activities & Subjects')).toBeTruthy();
+    expect(await screen.findByText('Add activities', { selector: 'h2' })).toBeTruthy();
   });
 
   it('does not go forward to a result that was cleared by Start Over', async () => {
     renderApp();
     await buildTimetable();
-    fireEvent.click(button(/Start Over/));
-    expect(await screen.findByText('Choose Your Timetable Type')).toBeTruthy();
+    fireEvent.click(button(/Start over/));
+    expect(await screen.findByText('What are you planning?')).toBeTruthy();
 
     window.history.back(); // the old #step-4 entry
     await waitFor(() => expect(window.location.hash).not.toBe('#step-4'));
-    expect(screen.queryByText('Your Smart Timetable')).toBeNull();
+    expect(screen.queryByRole('table')).toBeNull();
   });
 
   it('logs out and clears the draft', async () => {

@@ -1,7 +1,7 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
-import { useTheme } from '../../context/ThemeContext';
-import { formatDuration, formatSlotRange, slotMinutesOf } from '../../utils/time';
+import { AlertCircle, Clock, User, MapPin } from 'lucide-react';
+import { colorStyle } from '../../constants';
+import { formatDuration, formatTime, slotMinutesOf, toMinutes } from '../../utils/time';
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -9,13 +9,21 @@ const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 const orderedDays = (schedule) =>
     Object.keys(schedule).sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
 
+const iconClass = 'h-3 w-3 shrink-0';
+
+const Meta = ({ icon, children }) => (
+    <span className="flex min-w-0 items-center gap-1 text-xs text-muted">
+        {icon}
+        <span className="truncate">{children}</span>
+    </span>
+);
+
 const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) => {
-    const { darkMode } = useTheme();
     const days = orderedDays(generatedTimetable);
     const slots = timetableData.timeSlots;
     const slotMinutes = slotMinutesOf(timetableData);
 
-    // A multi-hour activity is drawn once, in its first hour, spanning the
+    // A multi-slot activity is drawn once, in its first slot, spanning the
     // following rows; the cells it covers are skipped.
     const cellInfo = (day, slotIndex) => {
         const daySchedule = generatedTimetable[day] || {};
@@ -31,15 +39,19 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
     };
 
     return (
-        <div className="overflow-x-auto rounded-xl shadow-xl print:overflow-visible print:shadow-none print-colors">
-            <table className="w-full min-w-[640px] print:min-w-0 border-collapse bg-white dark:bg-gray-800">
+        <div className="overflow-x-auto rounded-xl border border-rule bg-surface print:overflow-visible print:border-gray-300 print-colors">
+            <table className="w-full min-w-[680px] table-fixed border-collapse print:min-w-0">
+                <colgroup>
+                    <col className="w-24 sm:w-28" />
+                    {days.map(day => <col key={day} />)}
+                </colgroup>
                 <thead>
-                    <tr className="bg-gradient-to-r from-blue-500 to-purple-500 dark:bg-gray-900 dark:bg-none">
-                        <th scope="col" className="p-4 text-left font-bold text-white dark:text-gray-300">
+                    <tr className="border-b border-rule bg-sunken">
+                        <th scope="col" className="sticky left-0 z-10 bg-sunken px-3 py-3 text-left text-xs font-medium text-muted sm:px-4">
                             Time
                         </th>
                         {days.map(day => (
-                            <th key={day} scope="col" className="p-4 text-center font-bold text-white dark:text-gray-300">
+                            <th key={day} scope="col" className="border-l border-rule px-3 py-3 text-left font-display text-sm font-semibold text-ink">
                                 {day}
                             </th>
                         ))}
@@ -47,48 +59,40 @@ const TimetableGrid = ({ generatedTimetable, timetableData, conflicts = [] }) =>
                 </thead>
                 <tbody>
                     {slots.map((slot, slotIndex) => (
-                        <tr key={slot} className={slotIndex % 2 === 0 ? ('bg-gray-50 dark:bg-gray-800') : ('bg-white dark:bg-gray-700')}>
-                            <th scope="row" className="p-4 text-left font-semibold whitespace-nowrap text-gray-700 bg-gray-100 dark:text-gray-300 dark:bg-gray-900">
-                                {formatSlotRange(slot, slotMinutes)}
+                        <tr key={slot} className="border-b border-rule last:border-b-0">
+                            <th
+                                scope="row"
+                                className="sticky left-0 z-10 h-[5.25rem] whitespace-nowrap bg-surface px-3 py-2 text-left align-top tabular-nums sm:px-4 print:static"
+                            >
+                                <span className="block text-sm font-semibold text-ink">{slot}</span>{' '}
+                                <span className="block text-xs font-normal text-muted">
+                                    to {formatTime(toMinutes(slot) + slotMinutes)}
+                                </span>
                             </th>
                             {days.map(day => {
                                 const { entry, span, covered } = cellInfo(day, slotIndex);
                                 if (covered) return null;
 
                                 return (
-                                    <td key={day} rowSpan={span} className="p-2 align-top h-px">
+                                    <td key={day} rowSpan={span} className="h-px border-l border-rule p-1.5 align-top">
                                         {entry ? (
-                                            <div className={`h-full p-3 rounded-lg shadow-md transition-shadow duration-200 hover:shadow-xl ${darkMode ? entry.colorDark : entry.colorLight
-                                                } ${entry.borderColor} border-l-4`}>
-                                                <div className="flex items-center justify-between">
-                                                    <span className="font-semibold text-sm text-gray-800 dark:text-white">
+                                            <div
+                                                className={`flex h-full min-h-[4.5rem] flex-col gap-1 rounded-md border-l-[3px] px-2.5 py-2 ${colorStyle(entry.color).block}`}
+                                            >
+                                                <div className="flex items-start justify-between gap-1">
+                                                    <span className="text-sm font-semibold leading-snug text-ink">
                                                         {entry.name}
                                                     </span>
                                                     {conflicts.some(c => c.day === day && c.time === slot) && (
-                                                        <AlertCircle className="w-4 h-4 text-red-500 ml-1" aria-label="Conflict" />
+                                                        <AlertCircle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" aria-label="Conflict" />
                                                     )}
                                                 </div>
-                                                {span > 1 && (
-                                                    <div className="text-xs mt-1 text-gray-700 dark:text-gray-200">
-                                                        ⏱️ {formatDuration(span * slotMinutes)}
-                                                    </div>
-                                                )}
-                                                {entry.instructor && (
-                                                    <div className="text-xs mt-1 text-gray-700 dark:text-gray-200">
-                                                        👤 {entry.instructor}
-                                                    </div>
-                                                )}
-                                                {entry.room && (
-                                                    <div className="text-xs text-gray-700 dark:text-gray-200">
-                                                        📍 {entry.room}
-                                                    </div>
-                                                )}
+                                                {span > 1 && <Meta icon={<Clock className={iconClass} aria-hidden="true" />}>{formatDuration(span * slotMinutes)}</Meta>}
+                                                {entry.instructor && <Meta icon={<User className={iconClass} aria-hidden="true" />}>{entry.instructor}</Meta>}
+                                                {entry.room && <Meta icon={<MapPin className={iconClass} aria-hidden="true" />}>{entry.room}</Meta>}
                                             </div>
                                         ) : (
-                                            <div className="text-center p-3 text-gray-400 dark:text-gray-500 italic">
-                                                <span aria-hidden="true">-</span>
-                                                <span className="sr-only">Free</span>
-                                            </div>
+                                            <span className="sr-only">Free</span>
                                         )}
                                     </td>
                                 );

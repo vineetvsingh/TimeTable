@@ -1,15 +1,13 @@
 import React from 'react';
-import { RefreshCw } from 'lucide-react';
+import Logo from '../ui/Logo';
 
-const LoadingScreen = () => {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-            <div className="text-center">
-                <RefreshCw className="w-12 h-12 animate-spin text-purple-500 mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-300">Loading...</p>
-            </div>
+const LoadingScreen = () => (
+    <div className="flex min-h-screen items-center justify-center bg-paper" role="status">
+        <div className="flex flex-col items-center gap-4">
+            <Logo className="h-10 w-10 animate-pulse" />
+            <p className="text-sm text-muted">Loading…</p>
         </div>
-    );
-};
+    </div>
+);
 
 export default LoadingScreen;

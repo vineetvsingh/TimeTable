@@ -1,155 +1,125 @@
 import React from 'react';
 import { useTimetable } from '../../context/TimetableContext';
-import { Calendar, Download, Trash2, Clock, User, Printer, RefreshCw, AlertCircle } from 'lucide-react';
+import { Trash2, Printer, RefreshCw, AlertCircle, CalendarPlus } from 'lucide-react';
+import { TIMETABLE_TYPES } from '../../constants';
 import Button from '../ui/Button';
+
+const formatDate = (timestamp) => {
+    if (!timestamp) return 'Unknown date';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+const typeOf = (id) => TIMETABLE_TYPES.find(t => t.id === id);
+
+const iconAction =
+    'inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-sunken hover:text-ink';
 
 const SavedTimetables = ({ openTimetable, printTimetable }) => {
     const { savedTimetables, savedStatus, refreshSavedTimetables, deleteTimetable } = useTimetable();
-    const formatDate = (timestamp) => {
-        if (!timestamp) return 'Unknown date';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
 
-    const getTypeIcon = (type) => {
-        switch (type) {
-            case 'school':
-            case 'college':
-                return <Calendar className="w-5 h-5" />;
-            case 'personal':
-                return <User className="w-5 h-5" />;
-            case 'work':
-                return <Clock className="w-5 h-5" />;
-            default:
-                return <Calendar className="w-5 h-5" />;
-        }
-    };
+    const header = (
+        <div className="mb-6">
+            <h2 className="text-2xl font-bold text-ink sm:text-[1.75rem]">My timetables</h2>
+            <p className="mt-1 text-muted">Timetables you've saved. Open one to view, print or edit it.</p>
+        </div>
+    );
 
     // Only show the full-page states when there is nothing to list yet; while
     // refreshing an existing list, keep showing it.
-    if (savedTimetables.length === 0 && (savedStatus === 'loading')) {
+    if (savedTimetables.length === 0 && savedStatus === 'loading') {
         return (
-            <div className="text-center py-12" role="status">
-                <RefreshCw className="w-10 h-10 mx-auto mb-4 animate-spin text-purple-500" aria-hidden="true" />
-                <p className="text-gray-600 dark:text-gray-300">Loading your timetables...</p>
+            <div className="animate-fadeIn">
+                {header}
+                <div className="rounded-2xl border border-rule bg-surface py-16 text-center" role="status">
+                    <RefreshCw className="mx-auto h-6 w-6 animate-spin text-accent" aria-hidden="true" />
+                    <p className="mt-3 text-muted">Loading your timetables…</p>
+                </div>
             </div>
         );
     }
 
     if (savedStatus === 'error' && savedTimetables.length === 0) {
         return (
-            <div className="text-center py-12" role="alert">
-                <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" aria-hidden="true" />
-                <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
-                    Couldn't load your timetables
-                </h3>
-                <p className="mb-6 text-gray-600 dark:text-gray-400">
-                    Check your internet connection and try again.
-                </p>
-                <Button
-                    size="sm"
-                    onClick={refreshSavedTimetables}
-                >
-                    <RefreshCw className="w-4 h-4" aria-hidden="true" />
-                    Try again
-                </Button>
+            <div className="animate-fadeIn">
+                {header}
+                <div className="rounded-2xl border border-rule bg-surface px-6 py-16 text-center" role="alert">
+                    <AlertCircle className="mx-auto h-8 w-8 text-red-600 dark:text-red-400" aria-hidden="true" />
+                    <h3 className="mt-3 text-lg font-semibold text-ink">Couldn't load your timetables</h3>
+                    <p className="mt-1 text-muted">Check your internet connection and try again.</p>
+                    <Button size="sm" className="mt-5" onClick={refreshSavedTimetables}>
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                        Try again
+                    </Button>
+                </div>
             </div>
         );
     }
 
     if (savedTimetables.length === 0) {
         return (
-            <div className="text-center py-12">
-                <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" />
-                <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
-                    No Saved Timetables
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                    Create and save a timetable to see it here
-                </p>
+            <div className="animate-fadeIn">
+                {header}
+                <div className="rounded-2xl border border-dashed border-rule-strong bg-surface px-6 py-16 text-center">
+                    <CalendarPlus className="mx-auto h-8 w-8 text-faint" aria-hidden="true" />
+                    <h3 className="mt-3 text-lg font-semibold text-ink">No saved timetables yet</h3>
+                    <p className="mt-1 text-muted">Build a timetable, then choose Save to my timetables to keep it here.</p>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="animate-fadeIn">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-gray-800 dark:text-white">
-                My Saved Timetables
-            </h2>
-
-            <div className="overflow-hidden rounded-xl shadow-lg bg-white dark:bg-gray-800 dark:border dark:border-gray-700">
-                <div className="overflow-x-auto">
-                    <table className="w-full min-w-[600px]">
-                        <thead>
-                            <tr className="bg-gray-50 text-gray-700 dark:bg-gray-700 dark:text-gray-200 text-left">
-                                <th className="p-4 font-semibold">Name</th>
-                                <th className="p-4 font-semibold">Type</th>
-                                <th className="p-4 font-semibold">Date Created</th>
-                                <th className="p-4 font-semibold">Details</th>
-                                <th className="p-4 font-semibold text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                            {savedTimetables.map((timetable) => (
-                                <tr
-                                    key={timetable.id}
-                                    className="transition-colors duration-150 text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700/50"
+            {header}
+            <ul className="divide-y divide-rule overflow-hidden rounded-2xl border border-rule bg-surface">
+                {savedTimetables.map((timetable) => {
+                    const type = typeOf(timetable.type);
+                    const name = timetable.name || 'Untitled timetable';
+                    return (
+                        <li key={timetable.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-4 sm:flex-nowrap sm:px-5">
+                            <span className={`hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg sm:flex ${type?.tone || 'bg-sunken text-muted'}`}>
+                                {type ? <type.icon className="h-5 w-5" aria-hidden="true" /> : null}
+                            </span>
+                            <div className="min-w-0 flex-1">
+                                <p className="truncate font-semibold text-ink">{name}</p>
+                                <p className="text-sm text-muted">
+                                    {type ? type.name : 'Timetable'}, {timetable.activities?.length || 0} activities, {timetable.timeSlots?.length || 0} slots.
+                                    {' '}Saved {formatDate(timetable.createdAt)}.
+                                </p>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => openTimetable(timetable)}
+                                    aria-label="Open timetable"
                                 >
-                                    <td className="p-4 font-medium">
-                                        {timetable.name || 'Untitled Timetable'}
-                                    </td>
-                                    <td className="p-4">
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                                            {getTypeIcon(timetable.type)}
-                                            {timetable.type}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 text-sm">
-                                        {formatDate(timetable.createdAt)}
-                                    </td>
-                                    <td className="p-4 text-sm">
-                                        {timetable.activities?.length || 0} activities • {timetable.timeSlots?.length || 0} slots
-                                    </td>
-                                    <td className="p-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() => openTimetable(timetable)}
-                                                className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors dark:hover:bg-blue-900/20"
-                                                title="Open Timetable"
-                                                aria-label="Open timetable"
-                                            >
-                                                <Download className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => printTimetable(timetable)}
-                                                className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-lg transition-colors dark:hover:bg-indigo-900/20"
-                                                title="Print / Save as PDF"
-                                                aria-label="Print timetable"
-                                            >
-                                                <Printer className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => deleteTimetable(timetable.id)}
-                                                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors dark:hover:bg-red-900/20"
-                                                title="Delete Timetable"
-                                                aria-label="Delete timetable"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    Open
+                                </Button>
+                                <button
+                                    type="button"
+                                    onClick={() => printTimetable(timetable)}
+                                    className={iconAction}
+                                    title="Print or save as PDF"
+                                    aria-label="Print timetable"
+                                >
+                                    <Printer className="h-4 w-4" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => deleteTimetable(timetable.id)}
+                                    className={`${iconAction} hover:text-red-600 dark:hover:text-red-400`}
+                                    title="Delete"
+                                    aria-label="Delete timetable"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </button>
+                            </div>
+                        </li>
+                    );
+                })}
+            </ul>
         </div>
     );
 };

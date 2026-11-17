@@ -1,9 +1,7 @@
 import React from 'react';
-import { CheckCircle, AlertCircle, RefreshCw, Download, Edit3, Save, Cloud } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, RefreshCw, Download, Pencil, Cloud, Printer, RotateCcw } from 'lucide-react';
 import ConflictsPanel from './ConflictsPanel';
 import TimetableGrid from './TimetableGrid';
-import StatsDashboard from './StatsDashboard';
-import AlgorithmInfo from './AlgorithmInfo';
 import { useTimetable } from '../../context/TimetableContext';
 import Button from '../ui/Button';
 
@@ -20,114 +18,78 @@ const GeneratedTimetable = () => {
         setCurrentStep,
         resetGenerator
     } = useTimetable();
+
+    const days = Object.keys(generatedTimetable);
+    const filled = Object.values(generatedTimetable).reduce((total, day) => total + Object.keys(day).length, 0);
+    const capacity = days.length * timetableData.timeSlots.length;
+    const activityCount = timetableData.activities.length;
+
     return (
         <div className="animate-fadeIn">
-            {/* Only shown when printing */}
-            <h1 className="hidden print:block text-2xl font-bold text-black mb-4">
-                {timetableData.name || 'Timetable'}
-            </h1>
-
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 print:hidden">
-                <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
-                        Your Smart Timetable
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div className="min-w-0">
+                    <h2 className="truncate text-2xl font-bold text-ink sm:text-[1.75rem] print:text-black">
+                        {timetableData.name || 'Your timetable'}
                     </h2>
-                    <div className="flex items-center mt-2">
+                    <p className="mt-1 flex flex-wrap items-center gap-x-2 text-sm text-muted print:hidden">
                         {conflicts.length === 0 ? (
-                            <div className="flex items-center text-green-500">
-                                <CheckCircle className="w-5 h-5 mr-2" />
-                                <span className="font-semibold">Perfect! No conflicts detected</span>
-                            </div>
+                            <span className="inline-flex items-center gap-1.5 font-medium text-green-700 dark:text-green-400">
+                                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                                No conflicts detected.
+                            </span>
                         ) : (
-                            <div className="flex items-center text-red-500">
-                                <AlertCircle className="w-5 h-5 mr-2" />
-                                <span className="font-semibold">{conflicts.length} conflict(s) detected</span>
-                            </div>
+                            <span className="inline-flex items-center gap-1.5 font-medium text-red-700 dark:text-red-300">
+                                <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                                {conflicts.length} {conflicts.length === 1 ? 'problem' : 'problems'} to look at.
+                            </span>
                         )}
-                    </div>
+                        <span>
+                            {activityCount} {activityCount === 1 ? 'activity' : 'activities'} in {filled} of {capacity} slots across {days.length} days.
+                        </span>
+                    </p>
                 </div>
-                <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-                    <button
-                        onClick={generateTimetable}
-                        className="px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
-                    >
-                        <RefreshCw className="w-4 h-4 inline mr-2" />
-                        Regenerate
-                    </button>
-                    <button
-                        onClick={saveTimetable}
-                        disabled={isSaving}
-                        className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        <Cloud className="w-4 h-4 inline mr-2" />
-                        {isSaving ? 'Saving...' : isSavedTimetable ? 'Update Saved' : 'Save to Cloud'}
-                    </button>
-                    <button
-                        onClick={exportTimetable}
-                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
-                    >
-                        <Download className="w-4 h-4 inline mr-2" />
-                        Export
-                    </button>
-                    <button
-                        onClick={() => setCurrentStep(3)}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
-                    >
-                        <Edit3 className="w-4 h-4 inline mr-2" />
+
+                <div className="flex flex-wrap gap-2 lg:shrink-0 lg:flex-nowrap print:hidden">
+                    <Button variant="secondary" size="sm" onClick={() => setCurrentStep(3)}>
+                        <Pencil className="h-4 w-4" aria-hidden="true" />
                         Edit
-                    </button>
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={generateTimetable}>
+                        <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                        Regenerate
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => window.print()}>
+                        <Printer className="h-4 w-4" aria-hidden="true" />
+                        Print
+                    </Button>
+                    <Button variant="secondary" size="sm" onClick={exportTimetable}>
+                        <Download className="h-4 w-4" aria-hidden="true" />
+                        Export
+                    </Button>
+                    <Button size="sm" onClick={saveTimetable} disabled={isSaving}>
+                        <Cloud className="h-4 w-4" aria-hidden="true" />
+                        {isSaving ? 'Saving…' : isSavedTimetable ? 'Update saved copy' : 'Save to my timetables'}
+                    </Button>
                 </div>
             </div>
 
-            <div className="print:hidden">
+            <div className="mt-6 print:hidden">
                 <ConflictsPanel conflicts={conflicts} />
             </div>
 
-            {/* Success Message */}
-            {conflicts.length === 0 && (
-                <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6 print:hidden">
-                    <div className="flex items-center text-green-600 font-bold">
-                        <CheckCircle className="w-6 h-6 mr-2" />
-                        Perfect Schedule Generated!
-                    </div>
-                    <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                        Your timetable has been optimally scheduled with no conflicts. All preferences have been considered.
-                    </p>
-                </div>
-            )}
-
-            <TimetableGrid
-                generatedTimetable={generatedTimetable}
-                timetableData={timetableData}
-                conflicts={conflicts}
-            />
-
-            <div className="print:hidden">
-                <StatsDashboard
-                    timetableData={timetableData}
+            <div className="mt-6 print:mt-4">
+                <TimetableGrid
                     generatedTimetable={generatedTimetable}
+                    timetableData={timetableData}
                     conflicts={conflicts}
                 />
-
-                <AlgorithmInfo />
             </div>
 
-            <div className="mt-8 flex flex-wrap justify-between gap-3 print:hidden">
-                <Button
-                    variant="secondary"
-                    onClick={resetGenerator}
-                >
-                    ← Start Over
+            <div className="mt-8 border-t border-rule pt-6 print:hidden">
+                <Button variant="ghost" onClick={resetGenerator}>
+                    <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                    Start over
                 </Button>
-                <button
-                    onClick={() => {
-                        window.print();
-                    }}
-                    className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200"
-                >
-                    <Save className="w-5 h-5 inline mr-2" />
-                    Print/Save PDF
-                </button>
             </div>
         </div>
     );

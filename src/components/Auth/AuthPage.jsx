@@ -1,8 +1,50 @@
 import React, { useState } from 'react';
-import { Sparkles, LogIn, UserPlus, User, Mail, Lock, Eye, EyeOff, Sun, Moon, ArrowLeft, Send } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, Sun, Moon, ArrowLeft, Send } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import Button from '../ui/Button';
-import { inputClass } from '../ui/styles';
+import { inputClass, labelClass } from '../ui/styles';
+import { Wordmark } from '../ui/Logo';
+
+// A small, static week used as the picture beside the sign-in form:
+// [name, colour, day column, first row, rows spanned]
+const PREVIEW = [
+    ['Maths', 'blue', 0, 0, 2], ['English', 'purple', 1, 0, 1], ['Physics', 'indigo', 2, 0, 2], ['Maths', 'blue', 3, 0, 2], ['History', 'orange', 4, 0, 1],
+    ['Chemistry', 'green', 1, 1, 2], ['PE', 'red', 4, 1, 1], ['English', 'purple', 0, 2, 1], ['Art', 'yellow', 2, 2, 2], ['Computing', 'pink', 3, 2, 1],
+    ['History', 'orange', 0, 3, 1], ['English', 'purple', 4, 2, 1], ['Maths', 'blue', 1, 3, 1], ['PE', 'red', 3, 3, 1], ['Computing', 'pink', 4, 3, 1]
+];
+const PREVIEW_COLORS = {
+    blue: 'bg-blue-100 border-blue-500 dark:bg-blue-400/15 dark:border-blue-400',
+    purple: 'bg-purple-100 border-purple-500 dark:bg-purple-400/15 dark:border-purple-400',
+    indigo: 'bg-indigo-100 border-indigo-500 dark:bg-indigo-400/15 dark:border-indigo-400',
+    orange: 'bg-orange-100 border-orange-500 dark:bg-orange-400/15 dark:border-orange-400',
+    green: 'bg-green-100 border-green-600 dark:bg-green-400/15 dark:border-green-400',
+    red: 'bg-red-100 border-red-500 dark:bg-red-400/15 dark:border-red-400',
+    yellow: 'bg-yellow-100 border-yellow-500 dark:bg-yellow-400/15 dark:border-yellow-400',
+    pink: 'bg-pink-100 border-pink-500 dark:bg-pink-400/15 dark:border-pink-400'
+};
+
+const WeekPreview = () => (
+    <div aria-hidden="true" className="rounded-2xl border border-rule bg-surface p-4 shadow-sm">
+        <div className="grid grid-cols-[2.75rem_repeat(5,minmax(0,1fr))] gap-1.5 text-xs">
+            <span />
+            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map(d => (
+                <span key={d} className="pb-1 font-display font-semibold text-ink">{d}</span>
+            ))}
+            {['9:00', '10:00', '11:00', '1:00'].map((t, row) => (
+                <span key={t} className="pt-1 tabular-nums text-muted" style={{ gridRow: row + 2, gridColumn: 1 }}>{t}</span>
+            ))}
+            {PREVIEW.map(([name, color, day, row, span], i) => (
+                <span
+                    key={i}
+                    className={`flex h-full min-h-11 items-start rounded-md border-l-[3px] px-1.5 py-1 font-medium text-ink ${PREVIEW_COLORS[color]}`}
+                    style={{ gridColumn: day + 2, gridRow: `${row + 2} / span ${span}` }}
+                >
+                    {name}
+                </span>
+            ))}
+        </div>
+    </div>
+);
 
 const AuthPage = ({
     isLogin,
@@ -31,53 +73,64 @@ const AuthPage = ({
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-20 transition-all duration-500 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-            {/* Dark Mode Toggle */}
-            <div className="absolute top-4 right-4 z-50">
+        <div className="min-h-screen bg-paper text-ink">
+            <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+                <Wordmark />
                 <button
                     type="button"
                     onClick={() => toggleDarkMode()}
                     aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                    className="p-3 rounded-full transition-all duration-300 bg-white text-gray-800 hover:bg-gray-100 shadow-lg shadow-gray-400/20 dark:bg-gray-800 dark:text-yellow-400 dark:hover:bg-gray-700 dark:shadow-yellow-400/20"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted transition-colors hover:bg-sunken hover:text-ink"
                 >
-                    {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+                    {darkMode ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
                 </button>
             </div>
 
-            <div className="w-full max-w-md p-6 sm:p-8 rounded-2xl shadow-2xl transition-all duration-300 bg-white/90 backdrop-blur-lg dark:bg-gray-800/90 dark:border dark:border-gray-700">
+            <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-16 pt-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_26rem] lg:pt-12">
+            <div className="hidden lg:block">
+                <h1 className="max-w-lg text-[2.75rem] font-bold leading-[1.1] text-ink">
+                    Plan a week of classes in a few minutes.
+                </h1>
+                <p className="mt-4 max-w-md text-lg text-muted">
+                    Add your subjects, pick your hours, and get a timetable with no clashes. It is saved to your account and ready to print.
+                </p>
+                <div className="mt-10 max-w-xl">
+                    <WeekPreview />
+                </div>
+            </div>
+
+            <div className="mx-auto w-full max-w-md rounded-2xl border border-rule bg-surface p-6 shadow-sm sm:p-8">
 
                 {/* Header */}
-                <div className="text-center mb-8">
-                    <div className="flex items-center justify-center mb-4">
-                        <Sparkles className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-                        <h1 className="text-3xl font-bold ml-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                            Smart Timetable
-                        </h1>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-300">
+                <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-ink">
                         {isResettingPassword
                             ? 'Reset your password'
-                            : (isLogin ? 'Welcome back!' : 'Create your account')}
+                            : (isLogin ? 'Log in' : 'Create your account')}
+                    </h2>
+                    <p className="mt-1 text-sm text-muted">
+                        {isResettingPassword
+                            ? 'We will email you a link to choose a new password.'
+                            : (isLogin ? 'Welcome back. Your saved timetables are waiting.' : 'Free. Your timetables are kept in your account.')}
                     </p>
                 </div>
 
                 {!isResettingPassword ? (
                     <>
                         {/* Toggle Buttons */}
-                        <div className="flex rounded-lg p-1 mb-6 bg-gray-100 dark:bg-gray-700">
+                        <div className="mb-6 flex rounded-lg bg-sunken p-1">
                             <button
                                 type="button"
                                 aria-pressed={isLogin}
                                 onClick={() => {
                                     setIsLogin(true);
                                 }}
-                                className={`flex-1 py-2 px-4 rounded-md font-semibold transition-all duration-200 ${isLogin
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                                    : 'text-gray-600 dark:text-gray-300'
+                                className={`h-9 flex-1 rounded-md text-sm font-semibold transition-colors duration-150 ${isLogin
+                                    ? 'bg-surface text-ink shadow-sm'
+                                    : 'text-muted hover:text-ink'
                                     }`}
                             >
-                                <LogIn className="w-4 h-4 inline mr-2" />
-                                Login
+                                Log in
                             </button>
                             <button
                                 type="button"
@@ -85,13 +138,12 @@ const AuthPage = ({
                                 onClick={() => {
                                     setIsLogin(false);
                                 }}
-                                className={`flex-1 py-2 px-4 rounded-md font-semibold transition-all duration-200 ${!isLogin
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                                    : 'text-gray-600 dark:text-gray-300'
+                                className={`h-9 flex-1 rounded-md text-sm font-semibold transition-colors duration-150 ${!isLogin
+                                    ? 'bg-surface text-ink shadow-sm'
+                                    : 'text-muted hover:text-ink'
                                     }`}
                             >
-                                <UserPlus className="w-4 h-4 inline mr-2" />
-                                Register
+                                Sign up
                             </button>
                         </div>
 
@@ -99,11 +151,11 @@ const AuthPage = ({
                         <form onSubmit={handleAuthSubmit} className="space-y-4">
                             {!isLogin && (
                                 <div>
-                                    <label htmlFor="auth-name" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                        Full Name
+                                    <label htmlFor="auth-name" className={labelClass}>
+                                        Full name
                                     </label>
                                     <div className="relative">
-                                        <User aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                        <User aria-hidden="true" className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted" />
                                         <input
                                             type="text"
                                             id="auth-name"
@@ -113,21 +165,19 @@ const AuthPage = ({
                                         aria-describedby={authErrors.name ? 'auth-name-error' : undefined}
                                             value={formData.name}
                                             onChange={handleInputChange}
-                                            className={`${inputClass} pl-10 pr-4 py-3 ${authErrors.name ? 'border-red-500' : ''
-                                                }`}
-                                            placeholder="Enter your full name"
+                                            className={`${inputClass} h-11 pl-10 pr-3`}
                                         />
                                     </div>
-                                    {authErrors.name && <p id="auth-name-error" className="text-red-500 text-sm mt-1">{authErrors.name}</p>}
+                                    {authErrors.name && <p id="auth-name-error" className="mt-1 text-sm text-red-700 dark:text-red-300">{authErrors.name}</p>}
                                 </div>
                             )}
 
                             <div>
-                                <label htmlFor="auth-email" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                    Email Address
+                                <label htmlFor="auth-email" className={labelClass}>
+                                    Email
                                 </label>
                                 <div className="relative">
-                                    <Mail aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                    <Mail aria-hidden="true" className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted" />
                                     <input
                                         type="email"
                                         id="auth-email"
@@ -137,20 +187,19 @@ const AuthPage = ({
                                         aria-describedby={authErrors.email ? 'auth-email-error' : undefined}
                                         value={formData.email}
                                         onChange={handleInputChange}
-                                        className={`${inputClass} pl-10 pr-4 py-3 ${authErrors.email ? 'border-red-500' : ''
-                                            }`}
-                                        placeholder="Enter your email"
+                                        className={`${inputClass} h-11 pl-10 pr-3`}
+                                        placeholder="you@example.com"
                                     />
                                 </div>
-                                {authErrors.email && <p id="auth-email-error" className="text-red-500 text-sm mt-1">{authErrors.email}</p>}
+                                {authErrors.email && <p id="auth-email-error" className="mt-1 text-sm text-red-700 dark:text-red-300">{authErrors.email}</p>}
                             </div>
 
                             <div>
-                                <label htmlFor="auth-password" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                <label htmlFor="auth-password" className={labelClass}>
                                     Password
                                 </label>
                                 <div className="relative">
-                                    <Lock aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                    <Lock aria-hidden="true" className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted" />
                                     <input
                                         type={showPassword ? 'text' : 'password'}
                                         id="auth-password"
@@ -160,29 +209,27 @@ const AuthPage = ({
                                         aria-describedby={authErrors.password ? 'auth-password-error' : undefined}
                                         value={formData.password}
                                         onChange={handleInputChange}
-                                        className={`${inputClass} pl-10 pr-12 py-3 ${authErrors.password ? 'border-red-500' : ''
-                                            }`}
-                                        placeholder="Enter your password"
+                                        className={`${inputClass} h-11 pl-10 pr-11`}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         aria-label={showPassword ? 'Hide password' : 'Show password'}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                                        className="absolute right-1.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-muted hover:bg-sunken hover:text-ink"
                                     >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
                                     </button>
                                 </div>
-                                {authErrors.password && <p id="auth-password-error" className="text-red-500 text-sm mt-1">{authErrors.password}</p>}
+                                {authErrors.password && <p id="auth-password-error" className="mt-1 text-sm text-red-700 dark:text-red-300">{authErrors.password}</p>}
                             </div>
 
                             {!isLogin && (
                                 <div>
-                                    <label htmlFor="auth-confirmPassword" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                        Confirm Password
+                                    <label htmlFor="auth-confirmPassword" className={labelClass}>
+                                        Confirm password
                                     </label>
                                     <div className="relative">
-                                        <Lock aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                        <Lock aria-hidden="true" className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted" />
                                         <input
                                             type={showPassword ? 'text' : 'password'}
                                             id="auth-confirmPassword"
@@ -192,40 +239,33 @@ const AuthPage = ({
                                         aria-describedby={authErrors.confirmPassword ? 'auth-confirmPassword-error' : undefined}
                                             value={formData.confirmPassword}
                                             onChange={handleInputChange}
-                                            className={`${inputClass} pl-10 pr-4 py-3 ${authErrors.confirmPassword ? 'border-red-500' : ''
-                                                }`}
-                                            placeholder="Confirm your password"
+                                            className={`${inputClass} h-11 pl-10 pr-3`}
                                         />
                                     </div>
-                                    {authErrors.confirmPassword && <p id="auth-confirmPassword-error" className="text-red-500 text-sm mt-1">{authErrors.confirmPassword}</p>}
+                                    {authErrors.confirmPassword && <p id="auth-confirmPassword-error" className="mt-1 text-sm text-red-700 dark:text-red-300">{authErrors.confirmPassword}</p>}
                                 </div>
                             )}
 
                             <Button
                                 type="submit"
                                 fullWidth
-                                className="mt-6"
+                                className="mt-2"
                                 disabled={authLoading}
                             >
-                                {authLoading ? 'Please wait...' : (isLogin ? 'Login' : 'Create Account')}
+                                {authLoading ? 'Please wait…' : (isLogin ? 'Log in' : 'Create account')}
                             </Button>
 
-                            <div className="relative my-6">
-                                <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-                                </div>
-                                <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                                        Or continue with
-                                    </span>
-                                </div>
+                            <div className="flex items-center gap-3 py-1 text-sm text-muted">
+                                <span className="h-px flex-1 bg-rule" aria-hidden="true" />
+                                or
+                                <span className="h-px flex-1 bg-rule" aria-hidden="true" />
                             </div>
 
                             <button
                                 type="button"
                                 onClick={handleGoogleLogin}
                                 disabled={authLoading}
-                                className="w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 border-2 bg-white text-gray-800 border-gray-200 hover:bg-gray-50 dark:border-white dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-rule-strong bg-surface font-semibold text-ink transition-colors duration-150 hover:bg-sunken disabled:cursor-not-allowed disabled:opacity-45"
                             >
                                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                                     <path
@@ -245,9 +285,9 @@ const AuthPage = ({
                                         fill="#EA4335"
                                     />
                                 </svg>
-                                Google
+                                Continue with Google
                             </button>
-                            {authErrors.google && <p role="alert" className="text-red-500 text-sm text-center">{authErrors.google}</p>}
+                            {authErrors.google && <p role="alert" className="text-center text-sm text-red-700 dark:text-red-300">{authErrors.google}</p>}
                         </form>
 
                         {isLogin && (
@@ -255,7 +295,7 @@ const AuthPage = ({
                                 <button
                                     type="button"
                                     onClick={() => setIsResettingPassword(true)}
-                                    className="text-sm text-blue-600 hover:text-blue-700 dark:text-purple-400 dark:hover:text-purple-300"
+                                    className="text-sm font-medium text-accent-ink hover:underline"
                                 >
                                     Forgot password?
                                 </button>
@@ -265,37 +305,33 @@ const AuthPage = ({
                 ) : (
                     <form onSubmit={onResetSubmit} className="space-y-4">
                         <div>
-                            <label htmlFor="reset-email" className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                Email Address
+                            <label htmlFor="reset-email" className={labelClass}>
+                                Email
                             </label>
                             <div className="relative">
-                                <Mail aria-hidden="true" className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                <Mail aria-hidden="true" className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted" />
                                 <input
                                     id="reset-email"
                                     type="email"
                                     autoComplete="email"
                                     value={resetEmail}
                                     onChange={(e) => setResetEmail(e.target.value)}
-                                    className={`${inputClass} pl-10 pr-4 py-3`}
-                                    placeholder="Enter your email"
+                                    className={`${inputClass} h-11 pl-10 pr-3`}
+                                    placeholder="you@example.com"
                                     required
                                 />
                             </div>
-                            <p className="text-xs mt-2 text-gray-500 dark:text-gray-400">
-                                We'll send you a link to reset your password.
-                            </p>
                         </div>
 
                         <Button
                             type="submit"
                             fullWidth
-                            className="mt-6"
                             disabled={authLoading}
                         >
-                            {authLoading ? 'Sending...' : (
+                            {authLoading ? 'Sending…' : (
                                 <>
                                     <Send className="w-4 h-4" />
-                                    Send Reset Link
+                                    Send reset link
                                 </>
                             )}
                         </Button>
@@ -303,13 +339,14 @@ const AuthPage = ({
                         <button
                             type="button"
                             onClick={() => setIsResettingPassword(false)}
-                            className="w-full py-3 flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                            className="flex h-11 w-full items-center justify-center gap-2 rounded-lg font-semibold text-muted transition-colors hover:bg-sunken hover:text-ink"
                         >
                             <ArrowLeft className="w-4 h-4" />
-                            Back to Login
+                            Back to log in
                         </button>
                     </form>
                 )}
+            </div>
             </div>
         </div>
     );

@@ -1,10 +1,30 @@
 import React from 'react';
-import { Info } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { SLOT_LENGTHS } from '../../constants';
 import { slotPaletteFor, formatDuration } from '../../utils/time';
 import { useTimetable } from '../../context/TimetableContext';
 import Button from '../ui/Button';
-import { inputClass, labelClass } from '../ui/styles';
+import Chip from '../ui/Chip';
+import { fieldClass, labelClass, sectionTitleClass, hintClass } from '../ui/styles';
+
+const PREFERENCE_LABELS = {
+    prioritizePreferences: ['Honour preferred times first', 'Activities with a preferred time get it before others are placed.'],
+    minimizeGaps: ['Keep the day compact', 'Place activities next to each other to avoid free periods.'],
+    balanceWorkload: ['Spread work across the week', 'Prefer lighter days when there is a choice.']
+};
+
+const Section = ({ title, hint, action, children }) => (
+    <section className="border-t border-rule pt-6 first:border-t-0 first:pt-0">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+            <div>
+                <h3 className={sectionTitleClass}>{title}</h3>
+                {hint && <p className={hintClass}>{hint}</p>}
+            </div>
+            {action}
+        </div>
+        {children}
+    </section>
+);
 
 const Configuration = () => {
     const {
@@ -20,41 +40,35 @@ const Configuration = () => {
         setCurrentStep
     } = useTimetable();
     const palette = slotPaletteFor(timetableData);
-    const fieldClass = `${inputClass} p-3`;
+    const selectedCount = timetableData.timeSlots.length;
 
     return (
         <div className="animate-fadeIn">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-gray-800 dark:text-white">
-                Configure Your Timetable
-            </h2>
+            <h2 className="text-2xl font-bold text-ink sm:text-[1.75rem]">Set up your day</h2>
+            <p className="mt-1 text-muted">Name the timetable, then choose when activities can happen.</p>
 
-            <div className="space-y-8">
-                <div>
-                    <label htmlFor="timetable-name" className="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
-                        Timetable Name
-                    </label>
+            <div className="mt-8 space-y-6">
+                <Section title="Name">
+                    <label htmlFor="timetable-name" className="sr-only">Timetable name</label>
                     <input
                         id="timetable-name"
                         type="text"
-                        className={`${inputClass} p-4`}
-                        placeholder="Enter a memorable name for your timetable..."
+                        className={`${fieldClass} max-w-xl`}
+                        placeholder="e.g. Class 10B, Term 2"
                         value={timetableData.name}
                         onChange={(e) => setTimetableData(prev => ({ ...prev, name: e.target.value }))}
                     />
-                </div>
+                </Section>
 
-                <div>
-                    <p className="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
-                        Day &amp; Slot Length
-                    </p>
-                    <div className="grid sm:grid-cols-3 gap-4">
+                <Section title="Hours" hint="Slots are made from these. Change them to get 45-minute periods, for example.">
+                    <div className="grid max-w-xl gap-4 sm:grid-cols-3">
                         <div>
                             <label htmlFor="day-start" className={labelClass}>Day starts</label>
                             <input
                                 id="day-start"
                                 type="time"
                                 step="300"
-                                className={fieldClass}
+                                className={`${fieldClass} tabular-nums`}
                                 value={timetableData.dayStart}
                                 onChange={(e) => e.target.value && updateSlotSettings({ dayStart: e.target.value })}
                             />
@@ -65,7 +79,7 @@ const Configuration = () => {
                                 id="day-end"
                                 type="time"
                                 step="300"
-                                className={fieldClass}
+                                className={`${fieldClass} tabular-nums`}
                                 value={timetableData.dayEnd}
                                 onChange={(e) => e.target.value && updateSlotSettings({ dayEnd: e.target.value })}
                             />
@@ -84,78 +98,49 @@ const Configuration = () => {
                             </select>
                         </div>
                     </div>
-                </div>
+                </Section>
 
-                <div>
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <p id="slots-label" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
-                            Select Time Slots
-                        </p>
-                        {palette.length > 0 && (
-                            <div className="flex gap-2">
-                                <Button variant="secondary" size="sm" onClick={selectAllSlots}>Select all</Button>
-                                <Button variant="secondary" size="sm" onClick={clearSlots} disabled={timetableData.timeSlots.length === 0}>
-                                    Clear
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                    {palette.length === 0 && (
-                        <p role="alert" className="text-sm text-red-600 dark:text-red-400 mb-4">
-                            No slots fit: make sure the day ends at least one slot length after it starts.
-                        </p>
-                    )}
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mb-4" role="group" aria-labelledby="slots-label">
-                        {palette.map((slot) => (
-                            <button
-                                type="button"
-                                key={slot}
-                                aria-pressed={timetableData.timeSlots.includes(slot)}
-                                onClick={() => (timetableData.timeSlots.includes(slot) ? removeTimeSlot(slot) : addTimeSlot(slot))}
-                                className={`p-2 text-sm rounded-lg transition-all duration-200 ${timetableData.timeSlots.includes(slot)
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                {slot}
-                            </button>
-                        ))}
-                    </div>
-
-                    {timetableData.timeSlots.length > 0 && (
-                        <div className="p-4 rounded-lg bg-blue-50 dark:bg-gray-700">
-                            <p className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">
-                                Selected Time Slots ({timetableData.timeSlots.length}):
-                            </p>
-                            <div className="flex flex-wrap gap-2">
-                                {timetableData.timeSlots.map((slot) => (
-                                    <button
-                                        type="button"
-                                        key={slot}
-                                        onClick={() => removeTimeSlot(slot)}
-                                        aria-label={`Remove ${slot}`}
-                                        className="px-3 py-1 rounded-full text-sm cursor-pointer transition-all duration-200 bg-blue-100 text-blue-800 hover:bg-red-100 hover:text-red-800 dark:bg-purple-600 dark:text-white dark:hover:bg-red-600 dark:hover:text-white"
-                                    >
-                                        {slot} <span aria-hidden="true">×</span>
-                                    </button>
-                                ))}
-                            </div>
+                <Section
+                    title="Time slots"
+                    hint={selectedCount > 0
+                        ? `${selectedCount} of ${palette.length} selected. Leave out breaks such as lunch.`
+                        : 'Pick the slots activities can use. Leave out breaks such as lunch.'}
+                    action={palette.length > 0 && (
+                        <div className="flex gap-2">
+                            <Button variant="secondary" size="sm" onClick={selectAllSlots}>Select all</Button>
+                            <Button variant="ghost" size="sm" onClick={clearSlots} disabled={selectedCount === 0}>
+                                Clear
+                            </Button>
                         </div>
                     )}
-                </div>
-
-                {/* Optimization Settings */}
-                <div className="p-6 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:bg-gray-700 dark:bg-none">
-                    <div className="flex items-center mb-4">
-                        <Info className="w-5 h-5 mr-2 text-blue-600 dark:text-purple-400" />
-                        <h3 className="font-bold text-gray-800 dark:text-white">
-                            AI Optimization Settings
-                        </h3>
+                >
+                    {palette.length === 0 && (
+                        <p role="alert" className="text-sm text-red-700 dark:text-red-300">
+                            No slots fit. Make the day end at least one slot length after it starts.
+                        </p>
+                    )}
+                    <p id="slots-label" className="sr-only">Time slots</p>
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-2" role="group" aria-labelledby="slots-label">
+                        {palette.map((slot) => {
+                            const selected = timetableData.timeSlots.includes(slot);
+                            return (
+                                <Chip
+                                    key={slot}
+                                    selected={selected}
+                                    onClick={() => (selected ? removeTimeSlot(slot) : addTimeSlot(slot))}
+                                >
+                                    {slot}
+                                </Chip>
+                            );
+                        })}
                     </div>
-                    <div className="space-y-3">
+                </Section>
+
+                <Section title="Scheduling preferences">
+                    <div className="space-y-4">
                         {Object.entries(optimizationSettings).map(([key, value]) => (
-                            <label key={key} className="flex items-center group cursor-pointer">
-                                <div className="relative">
+                            <label key={key} className="flex cursor-pointer items-start gap-3">
+                                <span className="relative mt-0.5 shrink-0">
                                     <input
                                         type="checkbox"
                                         checked={value}
@@ -163,40 +148,38 @@ const Configuration = () => {
                                             ...prev,
                                             [key]: e.target.checked
                                         }))}
-                                        className="sr-only peer"
+                                        className="peer sr-only"
                                     />
-                                    <div className={`w-12 h-6 rounded-full transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-purple-500 peer-focus-visible:ring-offset-2 ${value
-                                        ? 'bg-gradient-to-r from-blue-500 to-purple-500'
-                                        : 'bg-gray-300 dark:bg-gray-600'
-                                        }`}>
-                                        <div className={`w-5 h-5 bg-white rounded-full shadow-lg transform transition-transform duration-200 ${value ? 'translate-x-6' : 'translate-x-0.5'
-                                            } mt-0.5`}></div>
-                                    </div>
-                                </div>
-                                <span className="ml-3 text-gray-700 dark:text-gray-300">
-                                    {key === 'prioritizePreferences' && '🎯 Prioritize time preferences'}
-                                    {key === 'minimizeGaps' && '⏱️ Minimize gaps between activities'}
-                                    {key === 'balanceWorkload' && '⚖️ Balance daily workload'}
+                                    <span
+                                        aria-hidden="true"
+                                        className={`block h-6 w-10 rounded-full transition-colors duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent ${value ? 'bg-accent' : 'bg-rule-strong'}`}
+                                    >
+                                        <span
+                                            className={`mt-0.5 block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-150 ${value ? 'translate-x-[18px]' : 'translate-x-0.5'}`}
+                                        />
+                                    </span>
+                                </span>
+                                <span>
+                                    <span className="block font-medium text-ink">{PREFERENCE_LABELS[key]?.[0] || key}</span>
+                                    <span className="block text-sm text-muted">{PREFERENCE_LABELS[key]?.[1]}</span>
                                 </span>
                             </label>
                         ))}
                     </div>
-                </div>
+                </Section>
+            </div>
 
-                <div className="flex flex-wrap justify-between gap-3">
-                    <Button
-                        variant="secondary"
-                        onClick={() => setCurrentStep(1)}
-                    >
-                        ← Back
-                    </Button>
-                    <Button
-                        onClick={() => setCurrentStep(3)}
-                        disabled={!timetableData.name || timetableData.timeSlots.length === 0}
-                    >
-                        Next →
-                    </Button>
-                </div>
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-rule pt-6">
+                <Button variant="ghost" onClick={() => setCurrentStep(1)}>
+                    <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                    Back
+                </Button>
+                <Button
+                    onClick={() => setCurrentStep(3)}
+                    disabled={!timetableData.name || selectedCount === 0}
+                >
+                    Continue
+                </Button>
             </div>
         </div>
     );

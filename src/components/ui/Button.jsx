@@ -1,22 +1,26 @@
 import React from 'react';
 
-// Shared button styles. Use `variant` for the look and `size` for padding;
+// Shared button styles. Use `variant` for the look and `size` for height;
 // pass `className` only for layout (margins, width) specific to one place.
+//   primary   - the one main action on a screen (solid teal)
+//   secondary - other actions (outlined)
+//   ghost     - low-emphasis actions such as Back or Cancel
+//   danger    - destructive confirmation
 
 const BASE =
-  'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 ' +
-  'disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center gap-2 rounded-lg font-semibold whitespace-nowrap ' +
+  'transition-colors duration-150 disabled:opacity-45 disabled:cursor-not-allowed';
 
 const VARIANTS = {
-  primary: 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg hover:shadow-xl disabled:shadow-none',
-  success: 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl disabled:shadow-none',
-  secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600',
+  primary: 'bg-accent text-on-accent hover:bg-accent-hover disabled:hover:bg-accent',
+  secondary: 'bg-surface text-ink border border-rule-strong hover:bg-sunken disabled:hover:bg-surface',
+  ghost: 'text-muted hover:bg-sunken hover:text-ink',
   danger: 'bg-red-600 text-white hover:bg-red-700'
 };
 
 const SIZES = {
-  sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3'
+  sm: 'h-9 px-3 text-sm',
+  md: 'h-11 px-5 text-[0.95rem]'
 };
 
 const Button = ({

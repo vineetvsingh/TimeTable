@@ -1,15 +1,19 @@
-// Shared class strings for form fields. Padding is left to the caller where
-// it differs (e.g. room for a leading icon).
+// Shared class strings for form fields and panels.
 
-export const labelClass = 'block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300';
+export const labelClass = 'block text-sm font-medium mb-1.5 text-ink';
 
-// Large fields: sign-in forms and the timetable name.
+// Text inputs and selects. Padding is left to the caller where it differs
+// (e.g. room for a leading icon); `fieldClass` is the usual size.
 export const inputClass =
-  'w-full rounded-lg transition-all duration-200 bg-white text-gray-800 border-2 border-gray-200 ' +
-  'focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border dark:border-gray-600 ' +
-  'dark:focus:border-purple-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20';
+  'w-full rounded-lg bg-surface text-ink border border-rule-strong placeholder:text-faint ' +
+  'transition-colors duration-150 focus:outline-none focus:border-accent focus:ring-3 focus:ring-accent/20 ' +
+  'aria-invalid:border-red-500';
 
-// Compact fields inside the activity form.
-export const compactInputClass =
-  'w-full p-3 rounded-lg bg-white text-gray-800 border border-gray-300 dark:bg-gray-600 ' +
-  'dark:text-white dark:border-gray-500 focus:ring-2 focus:ring-purple-500';
+export const fieldClass = `${inputClass} h-11 px-3`;
+
+// Kept for the activity form; same look as fieldClass.
+export const compactInputClass = fieldClass;
+
+// A titled group inside a step, e.g. "School day" or "Time slots".
+export const sectionTitleClass = 'text-base font-semibold text-ink';
+export const hintClass = 'text-sm text-muted';

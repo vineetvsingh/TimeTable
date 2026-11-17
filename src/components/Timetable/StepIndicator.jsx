@@ -1,39 +1,48 @@
 import React from 'react';
-import { CheckCircle } from 'lucide-react';
+import { Check } from 'lucide-react';
 
-const StepIndicator = ({ currentStep }) => {
-    return (
-        <div className="flex justify-center mb-8">
-            <div className="flex items-center space-x-2 sm:space-x-4">
-                {[
-                    { num: 1, label: 'Type' },
-                    { num: 2, label: 'Configure' },
-                    { num: 3, label: 'Activities' },
-                    { num: 4, label: 'Generate' }
-                ].map((step, index) => (
-                    <div key={step.num} className="flex items-center">
-                        <div className="relative">
-                            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold transition-all duration-300 ${currentStep >= step.num
-                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg transform scale-110'
-                                : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                                }`}>
-                                {currentStep > step.num ? <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6" /> : step.num}
-                            </div>
-                            <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs whitespace-nowrap text-gray-600 dark:text-gray-400">
-                                {step.label}
-                            </span>
-                        </div>
-                        {index < 3 && (
-                            <div className={`w-6 sm:w-16 h-1 ml-2 sm:ml-4 transition-all duration-300 ${currentStep > step.num
-                                ? 'bg-gradient-to-r from-blue-500 to-purple-500'
-                                : 'bg-gray-200 dark:bg-gray-700'
-                                }`}></div>
-                        )}
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
+const STEPS = ['Type', 'Setup', 'Activities', 'Timetable'];
+
+// The four wizard steps, in order. Done steps get a tick, the current one is filled.
+const StepIndicator = ({ currentStep }) => (
+    <ol className="flex items-center gap-2 sm:gap-3" aria-label="Progress">
+        {STEPS.map((label, index) => {
+            const num = index + 1;
+            const done = currentStep > num;
+            const current = currentStep === num;
+            return (
+                <li key={label} className={`flex items-center gap-2 sm:gap-3 last:flex-none ${current ? "flex-[1_0_auto]" : "min-w-0 flex-1"}`}>
+                    <span
+                        aria-current={current ? 'step' : undefined}
+                        className={`flex items-center gap-2 ${current ? 'shrink-0' : 'min-w-0'}`}
+                    >
+                        <span
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums ${current
+                                ? 'bg-accent text-on-accent'
+                                : done
+                                    ? 'bg-accent-soft text-accent-ink'
+                                    : 'border border-rule-strong text-muted'
+                                }`}
+                        >
+                            {done ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : num}
+                        </span>
+                        <span
+                            className={`text-sm ${current ? 'font-semibold text-ink' : 'hidden truncate text-muted sm:inline'}`}
+                        >
+                            {label}
+                            {done && <span className="sr-only"> (done)</span>}
+                        </span>
+                    </span>
+                    {num < STEPS.length && (
+                        <span
+                            aria-hidden="true"
+                            className={`h-px min-w-4 flex-1 ${done ? 'bg-accent' : 'bg-rule-strong'}`}
+                        />
+                    )}
+                </li>
+            );
+        })}
+    </ol>
+);
 
 export default StepIndicator;
